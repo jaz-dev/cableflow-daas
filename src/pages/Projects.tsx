@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Plus, MoreVertical } from 'lucide-react';
+import { Search, Plus, Trash2 } from 'lucide-react';
+import { Dialog } from '@headlessui/react';
 
 interface Project {
   id: string;
@@ -15,10 +16,29 @@ const sampleProjects: Project[] = [
 
 export const Projects = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [projects, setProjects] = useState(sampleProjects);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
-  const filteredProjects = sampleProjects.filter(project =>
+  const filteredProjects = projects.filter(project =>
     project.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleDeleteClick = (project: Project) => {
+    setProjectToDelete(project);
+    setIsDeleteModalOpen(true);
+    setDeleteConfirmation('');
+  };
+
+  const handleDelete = () => {
+    if (projectToDelete && deleteConfirmation === 'delete') {
+      setProjects(projects.filter(p => p.id !== projectToDelete.id));
+      setIsDeleteModalOpen(false);
+      setProjectToDelete(null);
+      setDeleteConfirmation('');
+    }
+  };
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -58,7 +78,7 @@ export const Projects = () => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredProjects.map((project) => (
-              <tr key={project.id} className="hover:bg-gray-50 cursor-pointer">
+              <tr key={project.id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{project.name}</div>
                 </td>
@@ -68,8 +88,11 @@ export const Projects = () => {
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <MoreVertical className="h-5 w-5" />
+                  <button 
+                    onClick={() => handleDeleteClick(project)}
+                    className="text-gray-400 hover:text-red-600 transition-colors"
+                  >
+                    <Trash2 className="h-5 w-5" />
                   </button>
                 </td>
               </tr>
@@ -77,6 +100,58 @@ export const Projects = () => {
           </tbody>
         </table>
       </div>
+
+      <Dialog 
+        open={isDeleteModalOpen} 
+        onClose={() => setIsDeleteModalOpen(false)}
+        className="relative z-50"
+      >
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <Dialog.Title className="text-lg font-medium text-gray-900 mb-4">
+              Delete Project
+            </Dialog.Title>
+            
+            <div className="mb-6">
+              <p className="text-sm text-gray-600 mb-4">
+                Are you sure you want to delete "{projectToDelete?.name}"? This action cannot be undone.
+              </p>
+              
+              <div className="space-y-2">
+                <label htmlFor="confirm" className="block text-sm font-medium text-gray-700">
+                  Type "delete" to confirm
+                </label>
+                <input
+                  type="text"
+                  id="confirm"
+                  value={deleteConfirmation}
+                  onChange={(e) => setDeleteConfirmation(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="delete"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleteConfirmation !== 'delete'}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Delete Project
+              </button>
+            </div>
+          </Dialog.Panel>
+        </div>
+      </Dialog>
     </div>
   );
 };
