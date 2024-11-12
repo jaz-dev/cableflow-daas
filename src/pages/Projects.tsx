@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Trash2 } from 'lucide-react';
 import { Dialog } from '@headlessui/react';
 
@@ -15,6 +16,7 @@ const sampleProjects: Project[] = [
 ];
 
 export const Projects = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [projects, setProjects] = useState(sampleProjects);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -79,7 +81,10 @@ export const Projects = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredProjects.map((project) => (
               <tr key={project.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td 
+                  className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                  onClick={() => navigate(`/projects/${project.id}`)}
+                >
                   <div className="text-sm font-medium text-gray-900">{project.name}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
