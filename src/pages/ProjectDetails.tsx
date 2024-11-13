@@ -52,7 +52,7 @@ export const ProjectDetails = () => {
   const displayedJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
 
   const handleNewJob = () => {
-    window.location.href = 'https://form.typeform.com/to/xxxxx'; // Replace with actual TypeForm URL
+    window.location.href = 'https://kkjhm7av2q9.typeform.com/to/IcHrmeZp?typeform-source=www.cableflow.io';
   };
 
   React.useEffect(() => {
@@ -85,6 +85,7 @@ export const ProjectDetails = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <h2 className="text-lg font-medium text-gray-900 mb-4">Project Description</h2>
         <h2 className="text-lg font-medium text-gray-900 mb-4">Common Attributes</h2>
         <p className="text-gray-600">This section will contain common project attributes.</p>
       </div>
