@@ -2,11 +2,24 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Trash2 } from 'lucide-react';
 import { Dialog } from '@headlessui/react';
+import { NewProjectModal } from '../components/NewProjectModal';
 
+// TODO: move interface to a common file
 interface Project {
   id: string;
   name: string;
+  description?: string;
   createdAt: string;
+  attributes?: {
+    temperatureRange?: {
+      min: string;
+      max: string;
+      unit: 'C' | 'F';
+    };
+    ipRating?: string;
+    positiveLocking?: string;
+    shielding?: string;
+  };
 }
 
 const sampleProjects: Project[] = [
@@ -22,6 +35,7 @@ export const Projects = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
 
   const filteredProjects = projects.filter(project =>
     project.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -42,11 +56,25 @@ export const Projects = () => {
     }
   };
 
+  const handleNewProject = (formData: any) => {
+    const newProject: Project = {
+      id: String(projects.length + 1),
+      name: formData.name,
+      description: formData.description,
+      createdAt: new Date().toISOString().split('T')[0],
+      attributes: formData.attributes,
+    };
+    setProjects([...projects, newProject]);
+  };
+
   return (
     <div className="max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Projects</h1>
-        <button className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <button
+          onClick={() => setIsNewProjectModalOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
           <Plus className="h-5 w-5" />
           New Project
         </button>
@@ -157,6 +185,13 @@ export const Projects = () => {
           </Dialog.Panel>
         </div>
       </Dialog>
+
+      <NewProjectModal
+        isOpen={isNewProjectModalOpen}
+        onClose={() => setIsNewProjectModalOpen(false)}
+        onSubmit={handleNewProject}
+        existingProjects={projects}
+      />
     </div>
   );
 };

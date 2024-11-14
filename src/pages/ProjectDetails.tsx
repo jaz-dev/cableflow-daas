@@ -3,10 +3,22 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Search, Plus, ArrowLeft } from 'lucide-react';
 import { Pagination } from '../components/Pagination';
 
+// TODO: move interface to common file
 interface Project {
   id: string;
   name: string;
+  description?: string;
   createdAt: string;
+  attributes?: {
+    temperatureRange?: {
+      min: string;
+      max: string;
+      unit: 'C' | 'F';
+    };
+    ipRating?: string;
+    positiveLocking?: string;
+    shielding?: string;
+  };
 }
 
 interface Job {
@@ -18,7 +30,18 @@ interface Job {
 }
 
 const sampleProjects: Project[] = [
-  { id: '1', name: 'Industrial Control Panel', createdAt: '2024-02-15' },
+  {
+    id: '1',
+    name: 'Industrial Control Panel',
+    description: 'Control panel for industrial machinery',
+    createdAt: '2024-02-15',
+    attributes: {
+      temperatureRange: { min: '-10', max: '50', unit: 'C' },
+      ipRating: '67',
+      positiveLocking: 'Required on all connectors',
+      shielding: 'EMI shielding required',
+    },
+  },
   { id: '2', name: 'Data Center Wiring', createdAt: '2024-02-10' },
   { id: '3', name: 'Factory Automation', createdAt: '2024-02-05' },
 ];
@@ -84,11 +107,54 @@ export const ProjectDetails = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Project Description</h2>
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Common Attributes</h2>
-        <p className="text-gray-600">This section will contain common project attributes.</p>
-      </div>
+      {(currentProject.description || currentProject.attributes) && (
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          {currentProject.description && (
+            <div className="mb-6">
+              <h2 className="text-lg font-medium text-gray-900 mb-2">Description</h2>
+              <p className="text-gray-600">{currentProject.description}</p>
+            </div>
+          )}
+
+          {currentProject.attributes && (
+            <div>
+              <h2 className="text-lg font-medium text-gray-900 mb-4">Project Attributes</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {currentProject.attributes.temperatureRange && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700">Operating Temperature Range</h3>
+                    <p className="text-gray-600">
+                      {currentProject.attributes.temperatureRange.min}° - {currentProject.attributes.temperatureRange.max}°
+                      {currentProject.attributes.temperatureRange.unit}
+                    </p>
+                  </div>
+                )}
+
+                {currentProject.attributes.ipRating && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700">IP Rating</h3>
+                    <p className="text-gray-600">IP{currentProject.attributes.ipRating}</p>
+                  </div>
+                )}
+
+                {currentProject.attributes.positiveLocking && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700">Positive Locking</h3>
+                    <p className="text-gray-600">{currentProject.attributes.positiveLocking}</p>
+                  </div>
+                )}
+
+                {currentProject.attributes.shielding && (
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700">Shielding</h3>
+                    <p className="text-gray-600">{currentProject.attributes.shielding}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="relative mb-6">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
