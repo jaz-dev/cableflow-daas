@@ -1,4 +1,3 @@
-import React from 'react';
 import { Zap } from 'lucide-react';
 
 export const CableFlowLogo = ({ className }: { className?: string }) => {

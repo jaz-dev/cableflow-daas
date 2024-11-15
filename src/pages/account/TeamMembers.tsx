@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, Plus, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Plus } from 'lucide-react';
 
 interface TeamMember {
   id: string;

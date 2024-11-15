@@ -1,4 +1,3 @@
-import React from 'react';
 import { Check, Crown } from 'lucide-react';
 
 const plans = [
