@@ -23,9 +23,11 @@ interface NewProjectModalProps {
   onClose: () => void;
   onSubmit: (data: ProjectFormData) => void;
   existingProjects: { name: string }[];
+  initialData?: ProjectFormData;
+  mode?: 'create' | 'edit';
 }
 
-const initialFormData: ProjectFormData = {
+const defaultFormData: ProjectFormData = {
   name: '',
   description: '',
   attributes: {
@@ -36,16 +38,25 @@ const initialFormData: ProjectFormData = {
   },
 };
 
-export const NewProjectModal = ({ isOpen, onClose, onSubmit, existingProjects }: NewProjectModalProps) => {
-  const [formData, setFormData] = useState<ProjectFormData>(initialFormData);
+export const NewProjectModal = ({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  existingProjects, 
+  initialData,
+  mode = 'create' 
+}: NewProjectModalProps) => {
+  const [formData, setFormData] = useState<ProjectFormData>(defaultFormData);
   const [nameError, setNameError] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
-      setFormData(initialFormData);
+      setFormData(defaultFormData);
       setNameError('');
+    } else if (initialData && mode === 'edit') {
+      setFormData(initialData);
     }
-  }, [isOpen]);
+  }, [isOpen, initialData, mode]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +76,7 @@ export const NewProjectModal = ({ isOpen, onClose, onSubmit, existingProjects }:
   };
 
   const handleClose = () => {
-    setFormData(initialFormData);
+    setFormData(defaultFormData);
     setNameError('');
     onClose();
   };
@@ -91,7 +102,7 @@ export const NewProjectModal = ({ isOpen, onClose, onSubmit, existingProjects }:
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="mx-auto max-w-2xl w-full rounded-xl bg-white p-6 shadow-xl">
           <Dialog.Title className="text-xl font-semibold text-gray-900 mb-6">
-            New Project
+            {mode === 'edit' ? 'Edit Project' : 'New Project'}
           </Dialog.Title>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -236,7 +247,7 @@ export const NewProjectModal = ({ isOpen, onClose, onSubmit, existingProjects }:
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
               >
-                Create Project
+                {mode === 'edit' ? 'Save Changes' : 'Create Project'}
               </button>
             </div>
           </form>

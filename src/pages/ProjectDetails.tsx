@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Search, Plus, ArrowLeft } from 'lucide-react';
+import { Search, Plus, ArrowLeft, Pencil } from 'lucide-react';
 import { Pagination } from '../components/Pagination';
+import { NewProjectModal } from '../components/NewProjectModal';
 
-// TODO: move interface to common file
+// TODO: move interface to a common file
 interface Project {
   id: string;
   name: string;
@@ -60,9 +61,11 @@ export const ProjectDetails = () => {
   const { id } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [projects, setProjects] = useState(sampleProjects);
   const itemsPerPage = 10;
 
-  const currentProject = sampleProjects.find(p => p.id === id);
+  const currentProject = projects.find(p => p.id === id);
 
   const filteredJobs = sampleJobs.filter(job =>
     job.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -76,6 +79,20 @@ export const ProjectDetails = () => {
 
   const handleNewJob = () => {
     window.location.href = 'https://kkjhm7av2q9.typeform.com/to/IcHrmeZp?typeform-source=www.cableflow.io';
+  };
+
+  const handleEditProject = (formData: any) => {
+    setProjects(projects.map(p => 
+      p.id === id 
+        ? { 
+            ...p, 
+            name: formData.name,
+            description: formData.description,
+            attributes: formData.attributes,
+          }
+        : p
+    ));
+    setIsEditModalOpen(false);
   };
 
   React.useEffect(() => {
@@ -109,50 +126,60 @@ export const ProjectDetails = () => {
 
       {(currentProject.description || currentProject.attributes) && (
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          {currentProject.description && (
-            <div className="mb-6">
-              <h2 className="text-lg font-medium text-gray-900 mb-2">Description</h2>
-              <p className="text-gray-600">{currentProject.description}</p>
+          <div className="flex justify-between items-start mb-6">
+            <div className="flex-1">
+              {currentProject.description && (
+                <div className="mb-6">
+                  <h2 className="text-lg font-medium text-gray-900 mb-2">Description</h2>
+                  <p className="text-gray-600">{currentProject.description}</p>
+                </div>
+              )}
+
+              {currentProject.attributes && (
+                <div>
+                  <h2 className="text-lg font-medium text-gray-900 mb-4">Project Attributes</h2>
+                  <div className="grid grid-cols-2 gap-4">
+                    {currentProject.attributes.temperatureRange && (
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-700">Operating Temperature Range</h3>
+                        <p className="text-gray-600">
+                          {currentProject.attributes.temperatureRange.min}° - {currentProject.attributes.temperatureRange.max}°
+                          {currentProject.attributes.temperatureRange.unit}
+                        </p>
+                      </div>
+                    )}
+
+                    {currentProject.attributes.ipRating && (
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-700">IP Rating</h3>
+                        <p className="text-gray-600">IP{currentProject.attributes.ipRating}</p>
+                      </div>
+                    )}
+
+                    {currentProject.attributes.positiveLocking && (
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-700">Positive Locking</h3>
+                        <p className="text-gray-600">{currentProject.attributes.positiveLocking}</p>
+                      </div>
+                    )}
+
+                    {currentProject.attributes.shielding && (
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-700">Shielding</h3>
+                        <p className="text-gray-600">{currentProject.attributes.shielding}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-
-          {currentProject.attributes && (
-            <div>
-              <h2 className="text-lg font-medium text-gray-900 mb-4">Project Attributes</h2>
-              <div className="grid grid-cols-2 gap-4">
-                {currentProject.attributes.temperatureRange && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700">Operating Temperature Range</h3>
-                    <p className="text-gray-600">
-                      {currentProject.attributes.temperatureRange.min}° - {currentProject.attributes.temperatureRange.max}°
-                      {currentProject.attributes.temperatureRange.unit}
-                    </p>
-                  </div>
-                )}
-
-                {currentProject.attributes.ipRating && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700">IP Rating</h3>
-                    <p className="text-gray-600">IP{currentProject.attributes.ipRating}</p>
-                  </div>
-                )}
-
-                {currentProject.attributes.positiveLocking && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700">Positive Locking</h3>
-                    <p className="text-gray-600">{currentProject.attributes.positiveLocking}</p>
-                  </div>
-                )}
-
-                {currentProject.attributes.shielding && (
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-700">Shielding</h3>
-                    <p className="text-gray-600">{currentProject.attributes.shielding}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className="p-2 text-gray-400 hover:text-gray-600"
+            >
+              <Pencil className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       )}
 
@@ -233,6 +260,15 @@ export const ProjectDetails = () => {
           </div>
         </div>
       </div>
+
+      <NewProjectModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSubmit={handleEditProject}
+        existingProjects={projects.filter(p => p.id !== id)}
+        initialData={currentProject}
+        mode="edit"
+      />
     </div>
   );
 };
