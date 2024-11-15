@@ -45,6 +45,18 @@ const sampleProjects: Project[] = [
   },
   { id: '2', name: 'Data Center Wiring', createdAt: '2024-02-10' },
   { id: '3', name: 'Factory Automation', createdAt: '2024-02-05' },
+  {
+    id: 'demo',
+    name: 'Industrial Control Panel',
+    description: 'Control panel for industrial machinery',
+    createdAt: '2024-02-15',
+    attributes: {
+      temperatureRange: { min: '-10', max: '50', unit: 'C' },
+      ipRating: '67',
+      positiveLocking: 'Required on all connectors',
+      shielding: 'EMI shielding required',
+    },
+  }
 ];
 
 const sampleJobs: Job[] = Array.from({ length: 100 }, (_, i) => ({

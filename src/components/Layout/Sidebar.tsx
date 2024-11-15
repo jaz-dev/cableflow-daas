@@ -33,7 +33,7 @@ export const Sidebar = () => {
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
       <nav className="flex-1 px-2 py-4 space-y-1">
         <NavItem to="/" icon={Home}>Home</NavItem>
-        <NavItem to="/demo" icon={PlayCircle}>Demo</NavItem>
+        <NavItem to="/projects/demo" icon={PlayCircle}>Demo</NavItem>
         <NavItem to="/projects" icon={FolderKanban}>Projects</NavItem>
         
         <Disclosure defaultOpen>
