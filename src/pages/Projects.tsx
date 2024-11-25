@@ -23,9 +23,9 @@ interface Project {
 }
 
 const sampleProjects: Project[] = [
-  { id: '1', name: 'Industrial Control Panel', createdAt: '2024-02-15' },
-  { id: '2', name: 'Data Center Wiring', createdAt: '2024-02-10' },
-  { id: '3', name: 'Factory Automation', createdAt: '2024-02-05' },
+  { id: '1', name: 'Liquid Handling Robot', createdAt: '2024-11-03' },
+  { id: '2', name: '3D Printer', createdAt: '2024-09-18' },
+  { id: '3', name: 'Autonomous Vegetable Harvesting Robot', createdAt: '2024-06-15' },
 ];
 
 export const Projects = () => {

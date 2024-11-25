@@ -13,8 +13,8 @@ interface ProjectFormData {
       unit: 'C' | 'F';
     };
     ipRating?: string;
-    positiveLocking?: string;
-    shielding?: string;
+    positiveLocking?: 'Yes' | 'No';
+    shielding?: 'Yes' | 'No';
   };
 }
 
@@ -33,8 +33,8 @@ const defaultFormData: ProjectFormData = {
   attributes: {
     temperatureRange: { min: '', max: '', unit: 'C' },
     ipRating: '',
-    positiveLocking: '',
-    shielding: '',
+    positiveLocking: 'Yes',
+    shielding: 'No',
   },
 };
 
@@ -209,28 +209,32 @@ export const NewProjectModal = ({
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="flex items-center">
+                  <label className="block text-sm font-medium text-gray-700 mr-3">
                     Positive Locking
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={formData.attributes.positiveLocking}
                     onChange={(e) => handleAttributeChange('positiveLocking', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="flex items-center">
+                  <label className="block text-sm font-medium text-gray-700 mr-14">
                     Shielding
                   </label>
-                  <input
-                    type="text"
+                  <select
                     value={formData.attributes.shielding}
                     onChange={(e) => handleAttributeChange('shielding', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                    className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                  </select>
                 </div>
               </div>
             </div>

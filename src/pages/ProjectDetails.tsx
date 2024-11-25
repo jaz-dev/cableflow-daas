@@ -17,8 +17,8 @@ interface Project {
       unit: 'C' | 'F';
     };
     ipRating?: string;
-    positiveLocking?: string;
-    shielding?: string;
+    positiveLocking?: 'Yes' | 'No';
+    shielding?: 'Yes' | 'No';
   };
 }
 
@@ -33,28 +33,50 @@ interface Job {
 const sampleProjects: Project[] = [
   {
     id: '1',
-    name: 'Industrial Control Panel',
-    description: 'Control panel for industrial machinery',
-    createdAt: '2024-02-15',
+    name: 'Liquid Handling Robot',
+    description: 'Pipetting Gantry Robot for Automated Assay Sample Prep',
+    createdAt: '2024-11-03',
     attributes: {
-      temperatureRange: { min: '-10', max: '50', unit: 'C' },
-      ipRating: '67',
-      positiveLocking: 'Required on all connectors',
-      shielding: 'EMI shielding required',
+      temperatureRange: { min: '0', max: '35', unit: 'C' },
+      ipRating: '21',
+      positiveLocking: 'Yes',
+      shielding: 'No',
     },
   },
-  { id: '2', name: 'Data Center Wiring', createdAt: '2024-02-10' },
-  { id: '3', name: 'Factory Automation', createdAt: '2024-02-05' },
+  {
+    id: '2',
+    name: '3D Printer',
+    description: 'FDM 3D Printer',
+    createdAt: '2024-09-18',
+    attributes: {
+      temperatureRange: { min: '0', max: '35', unit: 'C' },
+      ipRating: '21',
+      positiveLocking: 'Yes',
+      shielding: 'No',
+    },
+  },
+  {
+    id: '3',
+    name: 'Autonomous Vegetable Harvesting Robot',
+    description: 'Multi-Axis Robot Arm with Drive Stage for Harvesting Veggies in Greenhouses',
+    createdAt: '2024-06-15',
+    attributes: {
+      temperatureRange: { min: '-5', max: '55', unit: 'C' },
+      ipRating: '45',
+      positiveLocking: 'Yes',
+      shielding: 'No',
+    },
+  },
   {
     id: 'demo',
-    name: 'Industrial Control Panel',
-    description: 'Control panel for industrial machinery',
+    name: 'Liquid Handling Robot',
+    description: 'Pipetting Gantry Robot for Automated Assay Sample Prep',
     createdAt: '2024-02-15',
     attributes: {
-      temperatureRange: { min: '-10', max: '50', unit: 'C' },
-      ipRating: '67',
-      positiveLocking: 'Required on all connectors',
-      shielding: 'EMI shielding required',
+      temperatureRange: { min: '0', max: '35', unit: 'C' },
+      ipRating: '21',
+      positiveLocking: 'Yes',
+      shielding: 'No',
     },
   }
 ];
