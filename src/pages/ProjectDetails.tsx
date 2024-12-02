@@ -26,7 +26,7 @@ interface Job {
   id: string;
   partName: string;
   revision: string;
-  status: 'Completed' | 'Needs Review' | 'In Progress';
+  status: 'Completed' | 'In Progress';
   created: string;
 }
 
@@ -85,7 +85,7 @@ const sampleJobs: Job[] = Array.from({ length: 100 }, (_, i) => ({
   id: `JOB-${String(i + 1).padStart(4, '0')}`,
   partName: `CBL-${Math.floor(10000 + Math.random() * 90000)}`,
   revision: String.fromCharCode(65 + Math.floor(Math.random() * 3)),
-  status: ['Completed', 'Needs Review', 'In Progress'][Math.floor(Math.random() * 3)] as Job['status'],
+  status: ['Completed', 'In Progress'][Math.floor(Math.random() * 2)] as Job['status'],
   created: new Date(2024, Math.floor(Math.random() * 12), Math.floor(1 + Math.random() * 28))
     .toLocaleDateString('en-US'),
 }));
@@ -265,8 +265,6 @@ export const ProjectDetails = () => {
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     job.status === 'Completed'
                       ? 'bg-green-100 text-green-800'
-                      : job.status === 'Needs Review'
-                      ? 'bg-yellow-100 text-yellow-800'
                       : 'bg-blue-100 text-blue-800'
                   }`}>
                     {job.status}
