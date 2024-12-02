@@ -4,61 +4,17 @@ import { Search, Plus, ArrowLeft, Pencil } from 'lucide-react';
 import { Pagination } from '../components/Pagination';
 import { NewProjectModal } from '../components/NewProjectModal';
 import { useJobStore } from '../stores/jobStore';
+import { Project, useProjectStore } from '../stores/projectStore';
 
-interface Project {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-  attributes?: {
-    temperatureRange?: {
-      min: string;
-      max: string;
-      unit: 'C' | 'F';
-    };
-    ipRating?: string;
-    positiveLocking?: 'Yes' | 'No';
-    shielding?: 'Yes' | 'No';
-  };
-}
+export const ProjectDetails = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const itemsPerPage = 10;
 
-const sampleProjects: Project[] = [
-  {
-    id: '1',
-    name: 'Liquid Handling Robot',
-    description: 'Pipetting Gantry Robot for Automated Assay Sample Prep',
-    createdAt: '2024-11-03',
-    attributes: {
-      temperatureRange: { min: '0', max: '35', unit: 'C' },
-      ipRating: '21',
-      positiveLocking: 'Yes',
-      shielding: 'No',
-    },
-  },
-  {
-    id: '2',
-    name: '3D Printer',
-    description: 'FDM 3D Printer',
-    createdAt: '2024-09-18',
-    attributes: {
-      temperatureRange: { min: '0', max: '35', unit: 'C' },
-      ipRating: '21',
-      positiveLocking: 'Yes',
-      shielding: 'No',
-    },
-  },
-  {
-    id: '3',
-    name: 'Autonomous Vegetable Harvesting Robot',
-    description: 'Multi-Axis Robot Arm with Drive Stage for Harvesting Veggies in Greenhouses',
-    createdAt: '2024-06-15',
-    attributes: {
-      temperatureRange: { min: '-5', max: '55', unit: 'C' },
-      ipRating: '45',
-      positiveLocking: 'Yes',
-      shielding: 'No',
-    },
-  },
+  const demoProject: Project =
   {
     id: 'demo',
     name: 'Liquid Handling Robot',
@@ -71,19 +27,17 @@ const sampleProjects: Project[] = [
       shielding: 'No',
     },
   }
-];
-
-export const ProjectDetails = () => {
-  const navigate = useNavigate();
-  const { id } = useParams();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [projects, setProjects] = useState(sampleProjects);
+  const projects = useProjectStore((state) => state.projects);
+  const updateProject = useProjectStore((state) => state.updateProject);
   const jobs = useJobStore((state) => state.jobs);
-  const itemsPerPage = 10;
 
-  const currentProject = projects.find(p => p.id === id);
+  let currentProject: Project | undefined = undefined
+  if (id === 'demo') {
+    currentProject = demoProject
+  } else {
+    currentProject = projects.find(p => p.id === id);
+  }
+  //const currentProject = projects.find(p => p.id === id);
 
   const filteredJobs = jobs.filter(job =>
     job.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -100,16 +54,11 @@ export const ProjectDetails = () => {
   };
 
   const handleEditProject = (formData: any) => {
-    setProjects(projects.map(p => 
-      p.id === id 
-        ? { 
-            ...p, 
-            name: formData.name,
-            description: formData.description,
-            attributes: formData.attributes,
-          }
-        : p
-    ));
+    updateProject(id!, {
+      name: formData.name,
+      description: formData.description,
+      attributes: formData.attributes,
+    });
     setIsEditModalOpen(false);
   };
 

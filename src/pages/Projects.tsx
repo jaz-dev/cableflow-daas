@@ -3,39 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Trash2 } from 'lucide-react';
 import { Dialog } from '@headlessui/react';
 import { NewProjectModal } from '../components/NewProjectModal';
-
-// TODO: move interface to a common file
-interface Project {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-  attributes?: {
-    temperatureRange?: {
-      min: string;
-      max: string;
-      unit: 'C' | 'F';
-    };
-    ipRating?: string;
-    positiveLocking?: string;
-    shielding?: string;
-  };
-}
-
-const sampleProjects: Project[] = [
-  { id: '1', name: 'Liquid Handling Robot', createdAt: '2024-11-03' },
-  { id: '2', name: '3D Printer', createdAt: '2024-09-18' },
-  { id: '3', name: 'Autonomous Vegetable Harvesting Robot', createdAt: '2024-06-15' },
-];
+import { useProjectStore, Project } from '../stores/projectStore';
 
 export const Projects = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [projects, setProjects] = useState(sampleProjects);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+
+  const projects = useProjectStore((state) => state.projects);
+  const addProject = useProjectStore((state) => state.addProject);
+  const deleteProject = useProjectStore((state) => state.deleteProject);
 
   const filteredProjects = projects.filter(project =>
     project.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -49,7 +29,7 @@ export const Projects = () => {
 
   const handleDelete = () => {
     if (projectToDelete && deleteConfirmation === 'delete') {
-      setProjects(projects.filter(p => p.id !== projectToDelete.id));
+      deleteProject(projectToDelete.id);
       setIsDeleteModalOpen(false);
       setProjectToDelete(null);
       setDeleteConfirmation('');
@@ -64,7 +44,8 @@ export const Projects = () => {
       createdAt: new Date().toISOString().split('T')[0],
       attributes: formData.attributes,
     };
-    setProjects([...projects, newProject]);
+    addProject(newProject);
+    setIsNewProjectModalOpen(false);
   };
 
   return (
