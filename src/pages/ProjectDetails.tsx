@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Search, Plus, ArrowLeft, Pencil } from 'lucide-react';
 import { Pagination } from '../components/Pagination';
 import { NewProjectModal } from '../components/NewProjectModal';
+import { useJobStore } from '../stores/jobStore';
 
-// TODO: move interface to a common file
 interface Project {
   id: string;
   name: string;
@@ -20,14 +20,6 @@ interface Project {
     positiveLocking?: 'Yes' | 'No';
     shielding?: 'Yes' | 'No';
   };
-}
-
-interface Job {
-  id: string;
-  partName: string;
-  revision: string;
-  status: 'Completed' | 'In Progress';
-  created: string;
 }
 
 const sampleProjects: Project[] = [
@@ -81,15 +73,6 @@ const sampleProjects: Project[] = [
   }
 ];
 
-const sampleJobs: Job[] = Array.from({ length: 100 }, (_, i) => ({
-  id: `JOB-${String(i + 1).padStart(4, '0')}`,
-  partName: `CBL-${Math.floor(10000 + Math.random() * 90000)}`,
-  revision: String.fromCharCode(65 + Math.floor(Math.random() * 3)),
-  status: ['Completed', 'In Progress'][Math.floor(Math.random() * 2)] as Job['status'],
-  created: new Date(2024, Math.floor(Math.random() * 12), Math.floor(1 + Math.random() * 28))
-    .toLocaleDateString('en-US'),
-}));
-
 export const ProjectDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -97,11 +80,12 @@ export const ProjectDetails = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [projects, setProjects] = useState(sampleProjects);
+  const jobs = useJobStore((state) => state.jobs);
   const itemsPerPage = 10;
 
   const currentProject = projects.find(p => p.id === id);
 
-  const filteredJobs = sampleJobs.filter(job =>
+  const filteredJobs = jobs.filter(job =>
     job.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.partName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.status.toLowerCase().includes(searchTerm.toLowerCase())
@@ -251,7 +235,11 @@ export const ProjectDetails = () => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {displayedJobs.map((job) => (
-              <tr key={job.id} className="hover:bg-gray-50">
+              <tr 
+                key={job.id} 
+                className="hover:bg-gray-50 cursor-pointer"
+                onClick={() => navigate(`/projects/${id}/jobs/${job.id}`)}
+              >
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {job.id}
                 </td>
