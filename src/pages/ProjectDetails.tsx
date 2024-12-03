@@ -50,7 +50,7 @@ export const ProjectDetails = () => {
   const displayedJobs = filteredJobs.slice(startIndex, startIndex + itemsPerPage);
 
   const handleNewJob = () => {
-    window.location.href = 'https://kkjhm7av2q9.typeform.com/to/IcHrmeZp?typeform-source=www.cableflow.io';
+    window.open('https://kkjhm7av2q9.typeform.com/to/IcHrmeZp?typeform-source=www.cableflow.io', '_blank');
   };
 
   const handleEditProject = (formData: any) => {

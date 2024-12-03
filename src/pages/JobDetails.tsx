@@ -42,8 +42,12 @@ export const JobDetails = () => {
   };
 
   const handleDownloadDrawing = () => {
-    // In a real app, this would trigger a PDF download
-    console.log('Downloading drawing...');
+    const link = document.createElement('a');
+    link.href = '/Example Drawing.pdf'; // Path to the PDF file
+    link.download = 'Example Drawing.pdf'; // Default filename for download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (

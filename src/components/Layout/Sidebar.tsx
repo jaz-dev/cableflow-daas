@@ -46,7 +46,7 @@ export const Sidebar = () => {
               </Disclosure.Button>
               
               <Disclosure.Panel className="pl-11 space-y-1">
-                <NavLink
+                {/* <NavLink
                   to="/account/plan"
                   className={({ isActive }) =>
                     clsx(
@@ -58,7 +58,7 @@ export const Sidebar = () => {
                   }
                 >
                   Plan
-                </NavLink>
+                </NavLink> */}
                 <NavLink
                   to="/account/personal"
                   className={({ isActive }) =>
