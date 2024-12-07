@@ -5,11 +5,11 @@ import {
   PlayCircle, 
   FolderKanban, 
   UserCircle, 
-  LogOut,
   ChevronDown
 } from 'lucide-react';
 import { Disclosure } from '@headlessui/react';
 import clsx from 'clsx';
+import { LogoutButton } from '../auth/LogoutButton';
 
 const NavItem = ({ to, icon: Icon, children }: { to: string; icon: any; children: React.ReactNode }) => (
   <NavLink
@@ -105,10 +105,7 @@ export const Sidebar = () => {
       </nav>
       
       <div className="border-t border-gray-200 p-4">
-        <button className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900">
-          <LogOut className="h-5 w-5" />
-          Logout
-        </button>
+        <LogoutButton />
       </div>
     </div>
   );
