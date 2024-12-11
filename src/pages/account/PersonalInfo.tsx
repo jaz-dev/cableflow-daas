@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Pencil } from 'lucide-react';
 import { PasswordResetModal } from '../../components/auth/PasswordResetModal';
+import { toast } from 'react-toastify';
 
 export const PersonalInfo = () => {
   const { user } = useAuth0();
@@ -9,31 +10,27 @@ export const PersonalInfo = () => {
 
   const handlePasswordReset = async () => {
     try {
-      const response = await fetch(`https://${import.meta.env.VITE_AUTH0_DOMAIN}/dbconnections/change_password`, {
-        method: 'POST',
+      const response = await fetch(`${import.meta.env.VITE_CABLEFLOW_API_URL}/api/users/me/password`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          client_id: import.meta.env.VITE_AUTH0_CLIENT_ID,
           email: user?.email,
-          connection: 'Username-Password-Authentication',
         }),
       });
   
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Password reset request failed');
+        throw new Error(`Network response was not ok: ${response.status}`);
       }
   
       setIsPasswordResetModalOpen(false);
+      toast.success('Password reset email sent successfully!');
     } catch (error) {
       console.error('Error requesting password reset:', error);
-  
+
       alert(
-        `Failed to send password reset request: ${
-          error.message || 'Unexpected error occurred'
-        }. Please try again later.`
+        `Error requesting password reset. Please try again later.`
       );
     }
   };
