@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Pencil } from 'lucide-react';
 import { PasswordResetModal } from '../../components/auth/PasswordResetModal';
-import { toast } from 'react-toastify';
 
 export const PersonalInfo = () => {
   const { user } = useAuth0();
@@ -25,7 +24,6 @@ export const PersonalInfo = () => {
       }
   
       setIsPasswordResetModalOpen(false);
-      toast.success('Password reset email sent successfully!');
     } catch (error) {
       console.error('Error requesting password reset:', error);
 
