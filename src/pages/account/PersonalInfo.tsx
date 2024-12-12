@@ -4,15 +4,17 @@ import { Pencil } from 'lucide-react';
 import { PasswordResetModal } from '../../components/auth/PasswordResetModal';
 
 export const PersonalInfo = () => {
-  const { user } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
   const [isPasswordResetModalOpen, setIsPasswordResetModalOpen] = useState(false);
 
   const handlePasswordReset = async () => {
     try {
+      const  accessToken = await getAccessTokenSilently();
       const response = await fetch(`${import.meta.env.VITE_CABLEFLOW_API_URL}/api/users/me/password`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${accessToken}`,
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           email: user?.email,
