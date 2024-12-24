@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Search, Plus, ArrowLeft, Pencil } from 'lucide-react';
 import { Pagination } from '../components/Pagination';
 import { NewProjectModal } from '../components/NewProjectModal';
 import { useJobStore } from '../stores/jobStore';
 import { Project, useProjectStore } from '../stores/projectStore';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export const ProjectDetails = () => {
   const navigate = useNavigate();
@@ -13,31 +14,65 @@ export const ProjectDetails = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const itemsPerPage = 10;
+  const { getAccessTokenSilently } = useAuth0();
+  const { fetchProjects, updateProject, projects } = useProjectStore();
 
-  const demoProject: Project =
-  {
+  const demoProject = React.useMemo(() => ({
     id: 'demo',
-    name: 'Liquid Handling Robot',
-    description: 'Pipetting Gantry Robot for Automated Assay Sample Prep',
-    createdAt: '2024-02-15',
-    attributes: {
-      temperatureRange: { min: '0', max: '35', unit: 'C' },
-      ipRating: '21',
-      positiveLocking: 'Yes',
+    project_name: 'Liquid Handling Robot',
+    project_description: 'Pipetting Gantry Robot for Automated Assay Sample Prep',
+    created_at: '2024-02-15',
+    project_attributes: {
+      temp_range: { min: '0', max: '35', unit: 'C' },
+      ip_rating: '21',
+      positive_locking: 'Yes',
       shielding: 'No',
     },
-  }
-  const projects = useProjectStore((state) => state.projects);
-  const updateProject = useProjectStore((state) => state.updateProject);
+  }), []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        fetchProjects(token);
+      } catch (err) {
+        console.error("Error fetching token:", err);
+      }
+    };
+
+    fetchData();
+  }, [getAccessTokenSilently, fetchProjects]);
+
+  // const projects = useProjectStore((state) => state.projects);
+  // const updateProject = useProjectStore((state) => state.updateProject);
   const jobs = useJobStore((state) => state.jobs);
 
-  let currentProject: Project | undefined = undefined
-  if (id === 'demo') {
-    currentProject = demoProject
-  } else {
-    currentProject = projects.find(p => p.id === id);
-  }
-  //const currentProject = projects.find(p => p.id === id);
+  // if (id == 'demo') {
+  //   setCurrentProject(demoProject);
+  // }
+  // else{ 
+  //   const project = projects.find(p => p.id === id);
+  //   if (project) {
+  //     setCurrentProject(project);
+  //   }
+  //   console.log("currentProject:", currentProject);
+  // }
+
+// Recalculate whenever `projects`, `id`, or other dependencies change
+  let currentProject: Project | null = null;
+  currentProject = useMemo(() => {
+    if (id === 'demo') {
+      return demoProject;
+    }
+    return projects.find(p => p.id == id) || null;
+  }, [id, projects, demoProject]);
+
+  // useEffect(() => {
+  //   if (currentProject) {
+  //     console.log("currentProject:", currentProject);
+  //     console.log("current project attributes:", currentProject?.project_attributes);
+  //   }
+  // }, [currentProject]);
 
   const filteredJobs = jobs.filter(job =>
     job.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -53,12 +88,13 @@ export const ProjectDetails = () => {
     window.open('https://kkjhm7av2q9.typeform.com/to/IcHrmeZp?typeform-source=www.cableflow.io', '_blank');
   };
 
-  const handleEditProject = (formData: any) => {
+  const handleEditProject = async (formData: any) => {
+    const token = await getAccessTokenSilently();
     updateProject(id!, {
-      name: formData.name,
-      description: formData.description,
-      attributes: formData.attributes,
-    });
+      project_name: formData.project_name,
+      project_description: formData.project_description,
+      project_attributes: formData.project_attributes,
+    }, token);
     setIsEditModalOpen(false);
   };
 
@@ -80,7 +116,7 @@ export const ProjectDetails = () => {
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
-          <h1 className="text-2xl font-semibold text-gray-900">{currentProject.name}</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">{currentProject.project_name}</h1>
         </div>
         <button
           onClick={handleNewJob}
@@ -91,49 +127,49 @@ export const ProjectDetails = () => {
         </button>
       </div>
 
-      {(currentProject.description || currentProject.attributes) && (
+      {(currentProject?.project_description || currentProject?.project_attributes) && (
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex justify-between items-start mb-6">
             <div className="flex-1">
-              {currentProject.description && (
+              {currentProject.project_description && (
                 <div className="mb-6">
                   <h2 className="text-lg font-medium text-gray-900 mb-2">Description</h2>
-                  <p className="text-gray-600">{currentProject.description}</p>
+                  <p className="text-gray-600">{currentProject.project_description}</p>
                 </div>
               )}
 
-              {currentProject.attributes && (
+              {currentProject?.project_attributes && (
                 <div>
                   <h2 className="text-lg font-medium text-gray-900 mb-4">Project Attributes</h2>
                   <div className="grid grid-cols-2 gap-4">
-                    {currentProject.attributes.temperatureRange && (
+                    {currentProject.project_attributes?.temp_range && (
                       <div>
                         <h3 className="text-sm font-medium text-gray-700">Operating Temperature Range</h3>
                         <p className="text-gray-600">
-                          {currentProject.attributes.temperatureRange.min}° - {currentProject.attributes.temperatureRange.max}°
-                          {currentProject.attributes.temperatureRange.unit}
+                          {currentProject.project_attributes.temp_range?.min}° - {currentProject.project_attributes.temp_range?.max}°
+                          {currentProject.project_attributes.temp_range?.unit}
                         </p>
                       </div>
                     )}
 
-                    {currentProject.attributes.ipRating && (
+                    {currentProject?.project_attributes?.ip_rating && (
                       <div>
                         <h3 className="text-sm font-medium text-gray-700">IP Rating</h3>
-                        <p className="text-gray-600">IP{currentProject.attributes.ipRating}</p>
+                        <p className="text-gray-600">IP{currentProject.project_attributes.ip_rating}</p>
                       </div>
                     )}
 
-                    {currentProject.attributes.positiveLocking && (
+                    {currentProject?.project_attributes?.positive_locking && (
                       <div>
                         <h3 className="text-sm font-medium text-gray-700">Positive Locking</h3>
-                        <p className="text-gray-600">{currentProject.attributes.positiveLocking}</p>
+                        <p className="text-gray-600">{currentProject.project_attributes.positive_locking}</p>
                       </div>
                     )}
 
-                    {currentProject.attributes.shielding && (
+                    {currentProject?.project_attributes?.shielding && (
                       <div>
                         <h3 className="text-sm font-medium text-gray-700">Shielding</h3>
-                        <p className="text-gray-600">{currentProject.attributes.shielding}</p>
+                        <p className="text-gray-600">{currentProject.project_attributes.shielding}</p>
                       </div>
                     )}
                   </div>
@@ -234,7 +270,7 @@ export const ProjectDetails = () => {
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleEditProject}
-        existingProjects={projects.filter(p => p.id !== id)}
+        existingProjects={projects.filter(p => p.id != id)}
         initialData={currentProject}
         mode="edit"
       />

@@ -4,16 +4,16 @@ import { HelpCircle } from 'lucide-react';
 
 // TODO: move interface to a common file
 interface ProjectFormData {
-  name: string;
-  description?: string;
-  attributes: {
-    temperatureRange?: {
+  project_name: string;
+  project_description?: string;
+  project_attributes: {
+    temp_range?: {
       min: string;
       max: string;
       unit: 'C' | 'F';
     };
-    ipRating?: string;
-    positiveLocking?: 'Yes' | 'No';
+    ip_rating?: string;
+    positive_locking?: 'Yes' | 'No';
     shielding?: 'Yes' | 'No';
   };
 }
@@ -28,12 +28,12 @@ interface NewProjectModalProps {
 }
 
 const defaultFormData: ProjectFormData = {
-  name: '',
-  description: '',
-  attributes: {
-    temperatureRange: { min: '', max: '', unit: 'C' },
-    ipRating: '',
-    positiveLocking: 'Yes',
+  project_name: '',
+  project_description: '',
+  project_attributes: {
+    temp_range: { min: '', max: '', unit: 'C' },
+    ip_rating: '',
+    positive_locking: 'Yes',
     shielding: 'No',
   },
 };
@@ -59,14 +59,15 @@ export const NewProjectModal = ({
   }, [isOpen, initialData, mode]);
 
   const handleSubmit = (e: React.FormEvent) => {
+    console.log('Form submitted:', formData);
     e.preventDefault();
     
-    if (!formData.name.trim()) {
+    if (!formData?.project_name.trim()) {
       setNameError('Project name is required');
       return;
     }
 
-    if (existingProjects.some(p => p.name.toLowerCase() === formData.name.toLowerCase())) {
+    if (existingProjects.some(p => p.project_name.toLowerCase() === formData.project_name.toLowerCase())) {
       setNameError('Project name must be unique');
       return;
     }
@@ -82,7 +83,7 @@ export const NewProjectModal = ({
   };
 
   const handleChange = (field: string, value: string) => {
-    if (field === 'name') {
+    if (field === 'project_name') {
       setNameError('');
     }
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -91,7 +92,7 @@ export const NewProjectModal = ({
   const handleAttributeChange = (field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
-      attributes: { ...prev.attributes, [field]: value },
+      project_attributes: { ...prev.project_attributes, [field]: value },
     }));
   };
 
@@ -116,8 +117,8 @@ export const NewProjectModal = ({
                 </label>
                 <input
                   type="text"
-                  value={formData.name}
-                  onChange={(e) => handleChange('name', e.target.value)}
+                  value={formData.project_name}
+                  onChange={(e) => handleChange('project_name', e.target.value)}
                   className={`w-full px-3 py-2 border rounded-md ${
                     nameError ? 'border-red-500' : 'border-gray-300'
                   } focus:outline-none focus:ring-2 focus:ring-blue-500`}
@@ -132,8 +133,8 @@ export const NewProjectModal = ({
                   Description (optional)
                 </label>
                 <textarea
-                  value={formData.description}
-                  onChange={(e) => handleChange('description', e.target.value)}
+                  value={formData.project_description}
+                  onChange={(e) => handleChange('project_description', e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -162,9 +163,9 @@ export const NewProjectModal = ({
                     <input
                       type="number"
                       placeholder="Min"
-                      value={formData.attributes.temperatureRange?.min}
-                      onChange={(e) => handleAttributeChange('temperatureRange', {
-                        ...formData.attributes.temperatureRange,
+                      value={formData.project_attributes?.temp_range?.min}
+                      onChange={(e) => handleAttributeChange('temp_range', {
+                        ...formData.project_attributes.temp_range,
                         min: e.target.value,
                       })}
                       className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -173,17 +174,17 @@ export const NewProjectModal = ({
                     <input
                       type="number"
                       placeholder="Max"
-                      value={formData.attributes.temperatureRange?.max}
-                      onChange={(e) => handleAttributeChange('temperatureRange', {
-                        ...formData.attributes.temperatureRange,
+                      value={formData.project_attributes.temp_range?.max}
+                      onChange={(e) => handleAttributeChange('temp_range', {
+                        ...formData.project_attributes.temp_range,
                         max: e.target.value,
                       })}
                       className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <select
-                      value={formData.attributes.temperatureRange?.unit}
-                      onChange={(e) => handleAttributeChange('temperatureRange', {
-                        ...formData.attributes.temperatureRange,
+                      value={formData.project_attributes.temp_range?.unit}
+                      onChange={(e) => handleAttributeChange('temp_range', {
+                        ...formData.project_attributes.temp_range,
                         unit: e.target.value as 'C' | 'F',
                       })}
                       className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -202,8 +203,8 @@ export const NewProjectModal = ({
                     <span className="text-gray-700">IP</span>
                     <input
                       type="text"
-                      value={formData.attributes.ipRating}
-                      onChange={(e) => handleAttributeChange('ipRating', e.target.value)}
+                      value={formData.project_attributes.ip_rating}
+                      onChange={(e) => handleAttributeChange('ip_rating', e.target.value)}
                       className="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -214,8 +215,8 @@ export const NewProjectModal = ({
                     Positive Locking
                   </label>
                   <select
-                    value={formData.attributes.positiveLocking}
-                    onChange={(e) => handleAttributeChange('positiveLocking', e.target.value)}
+                    value={formData.project_attributes.positive_locking}
+                    onChange={(e) => handleAttributeChange('positive_locking', e.target.value)}
                     className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="Yes">Yes</option>
@@ -228,7 +229,7 @@ export const NewProjectModal = ({
                     Shielding
                   </label>
                   <select
-                    value={formData.attributes.shielding}
+                    value={formData.project_attributes.shielding}
                     onChange={(e) => handleAttributeChange('shielding', e.target.value)}
                     className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >

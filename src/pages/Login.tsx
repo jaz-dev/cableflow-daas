@@ -2,9 +2,20 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Navigate } from 'react-router-dom';
 import { LoginButton } from '../components/auth/LoginButton';
 import { CableFlowLogo } from '../components/CableFlowLogo';
+import { useUserStore } from '../stores/userStore';
 
 export const Login = () => {
-  const { isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { fetchUser } = useUserStore();
+
+  const fetchUserData = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      fetchUser(token);
+    } catch (err) {
+      console.error("Error fetching token:", err);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -15,6 +26,7 @@ export const Login = () => {
   }
 
   if (isAuthenticated) {
+    fetchUserData();
     return <Navigate to="/" replace />;
   }
 

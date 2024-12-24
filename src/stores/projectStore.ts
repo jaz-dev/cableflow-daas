@@ -1,81 +1,76 @@
 import { create } from 'zustand';
-
-export interface Project {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-  attributes?: {
-    temperatureRange?: {
-      min: string;
-      max: string;
-      unit: 'C' | 'F';
-    };
-    ipRating?: string;
-    positiveLocking?: 'Yes' | 'No';
-    shielding?: 'Yes' | 'No';
-  };
-}
+import { projectsApi, Project, NewProject } from '../api/projects';
 
 interface ProjectStore {
   projects: Project[];
-  setProjects: (projects: Project[]) => void;
-  addProject: (project: Project) => void;
-  updateProject: (projectId: string, updates: Partial<Project>) => void;
-  deleteProject: (projectId: string) => void;
+  isLoading: boolean;
+  error: string | null;
+  fetchProjects: (token: string) => Promise<void>;
+  addProject: (project: NewProject, token: string) => Promise<void>;
+  updateProject: (projectId: string, updates: Partial<Project>, token: string) => Promise<void>;
+  deleteProject: (projectId: string, token: string) => Promise<void>;
 }
 
-const sampleProjects: Project[] = [
-  {
-    id: '1',
-    name: 'Liquid Handling Robot',
-    description: 'Pipetting Gantry Robot for Automated Assay Sample Prep',
-    createdAt: '2024-11-03',
-    attributes: {
-      temperatureRange: { min: '0', max: '35', unit: 'C' },
-      ipRating: '21',
-      positiveLocking: 'Yes',
-      shielding: 'No',
-    },
-  },
-  {
-    id: '2',
-    name: '3D Printer',
-    description: 'FDM 3D Printer',
-    createdAt: '2024-09-18',
-    attributes: {
-      temperatureRange: { min: '0', max: '35', unit: 'C' },
-      ipRating: '21',
-      positiveLocking: 'Yes',
-      shielding: 'No',
-    },
-  },
-  {
-    id: '3',
-    name: 'Autonomous Vegetable Harvesting Robot',
-    description: 'Multi-Axis Robot Arm with Drive Stage for Harvesting Veggies in Greenhouses',
-    createdAt: '2024-06-15',
-    attributes: {
-      temperatureRange: { min: '-5', max: '55', unit: 'C' },
-      ipRating: '45',
-      positiveLocking: 'Yes',
-      shielding: 'No',
-    },
-  },
-];
-
 export const useProjectStore = create<ProjectStore>((set) => ({
-  projects: sampleProjects,
-  setProjects: (projects) => set({ projects }),
-  addProject: (project) => set((state) => ({ 
-    projects: [...state.projects, project] 
-  })),
-  updateProject: (projectId, updates) => set((state) => ({
-    projects: state.projects.map((project) =>
-      project.id === projectId ? { ...project, ...updates } : project
-    ),
-  })),
-  deleteProject: (projectId) => set((state) => ({
-    projects: state.projects.filter((project) => project.id !== projectId),
-  })),
+  projects: [],
+  isLoading: false,
+  error: null,
+
+  fetchProjects: async (token) => {
+    set({ isLoading: true, error: null });
+    try {
+      const projects = await projectsApi.fetchAll(token);
+      set({ projects, isLoading: false });
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+      console.error('Error fetching projects:', error);
+    }
+  },
+
+  addProject: async (projectData, token) => {
+    set({ isLoading: true, error: null });
+    try {
+      const newProject = await projectsApi.create(projectData, token);
+      set((state) => ({
+        projects: [...state.projects, newProject],
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+      console.error('Error adding project:', error);
+    }
+  },
+
+  updateProject: async (projectId, updates, token) => {
+    set({ isLoading: true, error: null });
+    try {
+      console.log(updates)
+      const updatedProject = await projectsApi.update(projectId, updates, token);
+      set((state) => ({
+        projects: state.projects.map((project) =>
+          project.id == projectId ? updatedProject : project
+        ),
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+      console.error('Error updating project:', error);
+    }
+  },
+
+  deleteProject: async (projectId, token) => {
+    set({ isLoading: true, error: null });
+    try {
+      await projectsApi.delete(projectId, token);
+      set((state) => ({
+        projects: state.projects.filter((project) => project.id !== projectId),
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+      console.error('Error deleting project:', error);
+    }
+  },
 }));
+
+export type { Project, NewProject };

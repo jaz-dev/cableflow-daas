@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Trash2 } from 'lucide-react';
+import { Search, Plus, Trash2, AlertCircle, Loader2 } from 'lucide-react';
 import { Dialog } from '@headlessui/react';
 import { NewProjectModal } from '../components/NewProjectModal';
 import { useProjectStore, Project } from '../stores/projectStore';
+import { useAuth0 } from '@auth0/auth0-react';
+
 
 export const Projects = () => {
   const navigate = useNavigate();
@@ -12,13 +14,32 @@ export const Projects = () => {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
+  const { getAccessTokenSilently } = useAuth0();
 
-  const projects = useProjectStore((state) => state.projects);
-  const addProject = useProjectStore((state) => state.addProject);
-  const deleteProject = useProjectStore((state) => state.deleteProject);
+  const { 
+    projects, 
+    isLoading, 
+    error, 
+    fetchProjects, 
+    addProject, 
+    deleteProject 
+  } = useProjectStore();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        fetchProjects(token);
+      } catch (err) {
+        console.error("Error fetching token:", err);
+      }
+    };
+
+    fetchData();
+  }, [getAccessTokenSilently, fetchProjects]);
 
   const filteredProjects = projects.filter(project =>
-    project.name.toLowerCase().includes(searchTerm.toLowerCase())
+    project.project_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleDeleteClick = (project: Project) => {
@@ -27,26 +48,64 @@ export const Projects = () => {
     setDeleteConfirmation('');
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (projectToDelete && deleteConfirmation === 'delete') {
-      deleteProject(projectToDelete.id);
+      const token = await getAccessTokenSilently();
+      await deleteProject(projectToDelete.id, token);
       setIsDeleteModalOpen(false);
       setProjectToDelete(null);
       setDeleteConfirmation('');
     }
   };
 
-  const handleNewProject = (formData: any) => {
-    const newProject: Project = {
-      id: String(projects.length + 1),
-      name: formData.name,
-      description: formData.description,
-      createdAt: new Date().toISOString().split('T')[0],
-      attributes: formData.attributes,
+  const handleNewProject = async (formData: any) => {
+    const newProject = {
+      project_name: formData.project_name,
+      project_description: formData.project_description,
+      project_attributes: {
+        temp_range: formData.project_attributes.temp_range,
+        ip_rating: formData.project_attributes.ip_rating,
+        positive_locking: formData.project_attributes.positive_locking,
+        shielding: formData.project_attributes.shielding,
+      },
     };
-    addProject(newProject);
+    const token = await getAccessTokenSilently();
+    await addProject(newProject, token);
     setIsNewProjectModalOpen(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="max-w-5xl mx-auto">
+        <div className="bg-gray-100 border border-gray-200 rounded-lg p-4 flex items-center gap-3">
+          <Loader2 className="h-5 w-5 text-gray-600 animate-spin" />
+          <div>
+            <h3 className="text-sm font-medium text-gray-900">Loading projects...</h3>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-5xl mx-auto">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+          <div>
+            <h3 className="text-sm font-medium text-red-800">Error loading projects</h3>
+            <p className="text-sm text-red-700 mt-1">{error}</p>
+            {/* <button
+              onClick={() => fetchProjects()}
+              className="mt-2 text-sm font-medium text-red-600 hover:text-red-500"
+            >
+              Try again
+            </button> */}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -73,46 +132,54 @@ export const Projects = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-sm">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Project Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Created Date
-              </th>
-              <th className="relative px-6 py-3">
-                <span className="sr-only">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredProjects.map((project) => (
-              <tr key={project.id} className="hover:bg-gray-50">
-                <td 
-                  className="px-6 py-4 whitespace-nowrap cursor-pointer"
-                  onClick={() => navigate(`/projects/${project.id}`)}
-                >
-                  <div className="text-sm font-medium text-gray-900">{project.name}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {new Date(project.createdAt).toLocaleDateString()}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button 
-                    onClick={() => handleDeleteClick(project)}
-                    className="text-gray-400 hover:text-red-600 transition-colors"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </button>
-                </td>
+        {isLoading ? (
+          <div className="flex items-center justify-center p-8">
+            <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
+          </div>
+        ) : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Project Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Created Date
+                </th>
+                <th className="relative px-6 py-3">
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredProjects.map((project) => (
+                <tr key={project.id} className="hover:bg-gray-50">
+                  <td 
+                    className="px-6 py-4 whitespace-nowrap cursor-pointer"
+                    onClick={() => navigate(`/projects/${project.id}`)}
+                  >
+                    <div className="text-sm font-medium text-gray-900">
+                      {project.project_name}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {new Date(project.created_at).toLocaleDateString()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button 
+                      onClick={() => handleDeleteClick(project)}
+                      className="text-gray-400 hover:text-red-600 transition-colors"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       <Dialog 
@@ -130,7 +197,7 @@ export const Projects = () => {
             
             <div className="mb-6">
               <p className="text-sm text-gray-600 mb-4">
-                Are you sure you want to delete "{projectToDelete?.name}"? This action cannot be undone.
+                Are you sure you want to delete "{projectToDelete?.project_name}"? This action cannot be undone.
               </p>
               
               <div className="space-y-2">
