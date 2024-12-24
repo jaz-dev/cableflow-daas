@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Search, Plus, Loader2 } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useUserStore } from '../../stores/userStore';
+import { TeamMemberModal } from '../../components/TeamMemberModal';
 
 export const TeamMembers = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { getAccessTokenSilently } = useAuth0();
   const { fetchAllUsers, users, isLoading } = useUserStore();
 
@@ -47,9 +49,11 @@ export const TeamMembers = () => {
     <div className="max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Team Members</h1>
-        <button className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          <Plus className="h-5 w-5" />
-          Add team member
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Manage Team Members
         </button>
       </div>
 
@@ -77,12 +81,6 @@ export const TeamMembers = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Email
               </th>
-              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role
-              </th> */}
-              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th> */}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -97,32 +95,16 @@ export const TeamMembers = () => {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {member.email}
                 </td>
-                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {member.role}
-                </td> */}
-                {/* <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    member.status === 'active'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {member.status}
-                  </span>
-                </td> */}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* <div className="mt-8 bg-gray-50 p-4 rounded-lg">
-        <h2 className="text-sm font-medium text-gray-900 mb-4">Role Descriptions</h2>
-        <ul className="space-y-2 text-sm text-gray-600">
-          <li><strong>Admin:</strong> Can manage projects/designs/reports and company information including billing and users</li>
-          <li><strong>Maintainer:</strong> Can manage projects/designs/reports but cannot see or edit billing details and users</li>
-          <li><strong>Viewer:</strong> Can view projects and reports but cannot edit project data or see billing details and users</li>
-        </ul>
-      </div> */}
+      <TeamMemberModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 };
