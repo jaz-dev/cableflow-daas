@@ -1,43 +1,47 @@
-import { useState } from 'react';
-import { Search, Plus } from 'lucide-react';
-
-interface TeamMember {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: 'admin' | 'maintainer' | 'viewer';
-  status: 'active' | 'pending';
-}
-
-const sampleTeamMembers: TeamMember[] = [
-  {
-    id: '1',
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john@cableflow.io',
-    role: 'admin',
-    status: 'active',
-  },
-  {
-    id: '2',
-    firstName: 'Jane',
-    lastName: 'Smith',
-    email: 'jane@cableflow.io',
-    role: 'maintainer',
-    status: 'active',
-  },
-];
+import { useEffect, useMemo, useState } from 'react';
+import { Search, Plus, Loader2 } from 'lucide-react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useUserStore } from '../../stores/userStore';
 
 export const TeamMembers = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const { getAccessTokenSilently } = useAuth0();
+  const { fetchAllUsers, users, isLoading } = useUserStore();
 
-  const filteredMembers = sampleTeamMembers.filter(
-    member =>
-      member.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        await fetchAllUsers(token);
+      } catch (err) {
+        console.error("Error fetching token:", err);
+      }
+    };
+
+    fetchData();
+  }, [getAccessTokenSilently, fetchAllUsers]);
+
+  const filteredMembers = useMemo(() => {
+    return users.filter(
+      member =>
+        member.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        member.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        member.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [users, searchTerm]);
+
+  if (isLoading) {
+    return (
+      <div className="max-w-5xl mx-auto">
+        <div className="bg-gray-100 border border-gray-200 rounded-lg p-4 flex items-center gap-3">
+          <Loader2 className="h-5 w-5 text-gray-600 animate-spin" />
+          <div>
+            <h3 className="text-sm font-medium text-gray-900">Loading users...</h3>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -73,30 +77,30 @@ export const TeamMembers = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Email
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Role
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              </th> */}
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
-              </th>
+              </th> */}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {filteredMembers.map((member) => (
               <tr key={member.id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {member.firstName}
+                  {member?.first_name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {member.lastName}
+                  {member?.last_name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {member.email}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {member.role}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                </td> */}
+                {/* <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     member.status === 'active'
                       ? 'bg-green-100 text-green-800'
@@ -104,21 +108,21 @@ export const TeamMembers = () => {
                   }`}>
                     {member.status}
                   </span>
-                </td>
+                </td> */}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="mt-8 bg-gray-50 p-4 rounded-lg">
+      {/* <div className="mt-8 bg-gray-50 p-4 rounded-lg">
         <h2 className="text-sm font-medium text-gray-900 mb-4">Role Descriptions</h2>
         <ul className="space-y-2 text-sm text-gray-600">
           <li><strong>Admin:</strong> Can manage projects/designs/reports and company information including billing and users</li>
           <li><strong>Maintainer:</strong> Can manage projects/designs/reports but cannot see or edit billing details and users</li>
           <li><strong>Viewer:</strong> Can view projects and reports but cannot edit project data or see billing details and users</li>
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 };

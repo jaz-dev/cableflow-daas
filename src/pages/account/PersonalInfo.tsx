@@ -14,7 +14,7 @@ export const PersonalInfo = () => {
         method: 'PUT',
         headers: {
           "Authorization": `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: user?.email,
@@ -58,13 +58,6 @@ export const PersonalInfo = () => {
               Last name
             </label>
             <div className="text-gray-900">{user?.family_name}</div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Job title
-            </label>
-            <div className="text-gray-900">Software Engineer</div>
           </div>
 
           <div>

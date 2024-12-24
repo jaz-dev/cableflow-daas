@@ -29,7 +29,7 @@ export const Projects = () => {
     const fetchData = async () => {
       try {
         const token = await getAccessTokenSilently();
-        fetchProjects(token);
+        await fetchProjects(token);
       } catch (err) {
         console.error("Error fetching token:", err);
       }

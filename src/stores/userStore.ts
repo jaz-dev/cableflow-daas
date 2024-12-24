@@ -30,7 +30,7 @@ export const useUserStore = create<UserStore>((set) => ({
   fetchAllUsers: async (token) => {
     set({ isLoading: true, error: null });
     try {
-      const users = await usersApi.fetchAll(token);
+      const users = await usersApi.fetchAllUsers(token);
       set({ users, isLoading: false });
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
