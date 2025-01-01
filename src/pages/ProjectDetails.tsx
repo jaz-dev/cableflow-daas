@@ -30,19 +30,6 @@ export const ProjectDetails = () => {
     },
   }), []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await getAccessTokenSilently();
-        fetchProjects(token);
-      } catch (err) {
-        console.error("Error fetching token:", err);
-      }
-    };
-
-    fetchData();
-  }, [getAccessTokenSilently, fetchProjects]);
-
   // const projects = useProjectStore((state) => state.projects);
   // const updateProject = useProjectStore((state) => state.updateProject);
   const jobs = useJobStore((state) => state.jobs);
