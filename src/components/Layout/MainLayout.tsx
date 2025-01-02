@@ -4,15 +4,15 @@ import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 
 export const MainLayout = () => {
-  const { isLoading } = useAuthGuard();
+  // const { isLoading } = useAuthGuard();
 
-  if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="h-screen flex items-center justify-center">
+  //       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="h-screen flex flex-col">
