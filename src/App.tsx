@@ -11,7 +11,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<MainLayout />}>
-            <Route index element={<Navigate to="/cables" replace />} />
+            <Route index element={<BlankPage />} />
             <Route path="cables" element={<BlankPage />} />
             <Route path="orders" element={<BlankPage />} />
             <Route path="shipping" element={<BlankPage />} />

@@ -30,7 +30,7 @@ export const Sidebar = () => {
   return (
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
       <nav className="flex-1 px-2 py-4 space-y-1">
-        <NavItem to="/cables" icon={Cable}>Cables</NavItem>
+        <NavItem to="/" icon={Cable}>Cables</NavItem>
         <NavItem to="/orders" icon={ShoppingCart}>Orders</NavItem>
         <NavItem to="/shipping" icon={Truck}>Shipping</NavItem>
         <NavItem to="/account/personal" icon={UserCircle}>Personal Info</NavItem>
