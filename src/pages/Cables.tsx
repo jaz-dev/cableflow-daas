@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Search, Plus } from 'lucide-react';
 import { Pagination } from '../components/Pagination';
 import { CablesTable } from '../components/cables/CablesTable';
+import { DeleteCableModal } from '../components/cables/DeleteCableModal';
 import { CableOverview } from '../types/cable';
 
 // Generate sample data
@@ -20,11 +21,22 @@ export const Cables = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [cables, setCables] = useState<CableOverview[]>(sampleData);
   const [currentPage, setCurrentPage] = useState(1);
+  const [cableToDelete, setCableToDelete] = useState<CableOverview | null>(null);
   const itemsPerPage = 10;
 
   const handleDelete = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setCables(cables.filter(cable => cable.id !== id));
+    const cable = cables.find(c => c.id === id);
+    if (cable) {
+      setCableToDelete(cable);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (cableToDelete) {
+      setCables(cables.filter(cable => cable.id !== cableToDelete.id));
+      setCableToDelete(null);
+    }
   };
 
   const handleRowClick = (id: number) => {
@@ -120,6 +132,13 @@ export const Cables = () => {
           </div>
         )}
       </div>
+
+      <DeleteCableModal
+        isOpen={!!cableToDelete}
+        onClose={() => setCableToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        cableName={cableToDelete?.cable_name || ''}
+      />
     </div>
   );
 };
