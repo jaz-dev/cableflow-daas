@@ -1,9 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Search, Plus } from 'lucide-react';
 import { Pagination } from '../components/Pagination';
 import { CablesTable } from '../components/cables/CablesTable';
 import { DeleteCableModal } from '../components/cables/DeleteCableModal';
 import { CableOverview } from '../types/cable';
+import { useAuth0 } from '@auth0/auth0-react';
+import { cablesApi } from '../api/cables';
 
 // Generate sample data
 const sampleData: CableOverview[] = Array.from({ length: 100 }, (_, i) => ({
@@ -23,6 +25,21 @@ export const Cables = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [cableToDelete, setCableToDelete] = useState<CableOverview | null>(null);
   const itemsPerPage = 10;
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchData = async () => {
+        try {
+          const token = await getAccessTokenSilently();
+          setCables(await cablesApi.fetchAll(token));
+        } catch (err) {
+          console.error("Error fetching token:", err);
+        }
+      };
+      fetchData();
+    }
+  }, [getAccessTokenSilently, isAuthenticated]);
 
   const handleDelete = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
