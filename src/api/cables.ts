@@ -51,9 +51,9 @@ export const cablesApi = {
 //     return response.json();
 //   },
 
-  delete: async (projectId: string, token: string) => {
-    const headers = await projectsApi.getAuthHeaders(token);
-    const response = await fetch(`${BASE_URL}/${projectId}`, {
+  delete: async (id: string, token: string) => {
+    const headers = await cablesApi.getAuthHeaders(token);
+    const response = await fetch(`${BASE_URL}/${id}`, {
       method: 'DELETE',
       headers,
     });

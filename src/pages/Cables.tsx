@@ -49,10 +49,12 @@ export const Cables = () => {
     }
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (cableToDelete) {
       setCables(cables.filter(cable => cable.id !== cableToDelete.id));
       setCableToDelete(null);
+      const token = await getAccessTokenSilently();
+      await cablesApi.delete(cableToDelete.id, token);
     }
   };
 
