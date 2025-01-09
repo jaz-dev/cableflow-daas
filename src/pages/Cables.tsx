@@ -99,13 +99,13 @@ export const Cables = () => {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Cables</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Cable Quotes</h1>
         <button
           onClick={handleNewCable}
           className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
         >
           <Plus className="h-5 w-5" />
-          New Cable
+          New Cable Quote
         </button>
       </div>
 
