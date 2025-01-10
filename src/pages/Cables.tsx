@@ -2,10 +2,11 @@ import { useState, useMemo, useEffect } from 'react';
 import { Search, Plus } from 'lucide-react';
 import { Pagination } from '../components/Pagination';
 import { CablesTable } from '../components/cables/CablesTable';
-import { DeleteCableModal } from '../components/cables/DeleteCableModal';
+import { DeleteCableModal } from '../components/modals/DeleteCableModal';
 import { CableOverview } from '../types/cable';
 import { useAuth0 } from '@auth0/auth0-react';
 import { cablesApi } from '../api/cables';
+import { useNavigate } from 'react-router-dom';
 
 // Generate sample data
 const sampleData: CableOverview[] = Array.from({ length: 100 }, (_, i) => ({
@@ -26,6 +27,7 @@ export const Cables = () => {
   const [cableToDelete, setCableToDelete] = useState<CableOverview | null>(null);
   const itemsPerPage = 10;
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -64,8 +66,7 @@ export const Cables = () => {
   };
 
   const handleNewCable = () => {
-    console.log('New cable button clicked');
-    // Implementation will come later
+    navigate('/quote');
   };
 
   const filteredCables = useMemo(() => {
