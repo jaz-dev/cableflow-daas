@@ -72,7 +72,6 @@ export const FileUploadBox = ({
         className="hidden"
         onChange={handleFileChange}
         accept={accept}
-        required={required}
       />
       
       {files[fileKey] && (

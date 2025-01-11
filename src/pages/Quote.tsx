@@ -4,6 +4,7 @@ import { Switch } from '@headlessui/react';
 import { useAuth0 } from '@auth0/auth0-react';
 import clsx from 'clsx';
 import { FileUploadBox } from '../components/FileUploadBox';
+import { useNavigate } from 'react-router-dom';
 
 export const Quote = () => {
   const { isAuthenticated } = useAuth0();
@@ -20,6 +21,7 @@ export const Quote = () => {
     bom: null,
     fromTo: null
   });
+  const navigate = useNavigate();
 
   const validateQuantities = (value: string) => {
     const validRegex = /^\s*\d+(?:\s*,\s*\d+)*\s*$/;
@@ -37,13 +39,17 @@ export const Quote = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate quantities before submission
     if (!validateQuantities(quantities)) {
+      return;
+    }
+    if (files.drawing == null) {
+      alert('Please upload a drawing file before submitting.');
       return;
     }
 
     // Form submission logic will be implemented later
     console.log('Form submitted', { files });
+    navigate('/cables');
   };
 
   const RequiredLabel = ({ children }: { children: React.ReactNode }) => (
@@ -62,6 +68,12 @@ export const Quote = () => {
         <p className="text-gray-600 mb-8">
           Fill out form to get a quote quickly. We'll reach out if any clarification is needed. 
           When your quote is ready, it will be updated on your quotes dashboard and you will also get an email notification.
+          Reach out to us at <a 
+            href="mailto:support@cableflow.com"
+            className="text-blue-600 hover:text-blue-800"
+          >
+            support@cableflow.com
+          </a> if you have any questions.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-8">
@@ -207,7 +219,7 @@ export const Quote = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Anything else we should know for this quote?
+                Anything else we should know?
               </label>
               <textarea
                 value={additionalInfo}
