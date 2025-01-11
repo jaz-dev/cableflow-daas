@@ -6,7 +6,8 @@ import { DeleteCableModal } from '../components/modals/DeleteCableModal';
 import { CableOverview } from '../types/cable';
 import { useAuth0 } from '@auth0/auth0-react';
 import { cablesApi } from '../api/cables';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 // Generate sample data
 const sampleData: CableOverview[] = Array.from({ length: 100 }, (_, i) => ({
@@ -28,6 +29,18 @@ export const Cables = () => {
   const itemsPerPage = 10;
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Show success toast if navigating from quote submission
+    if (location.state?.showSuccessToast) {
+      toast.success('Quote request submitted successfully', {
+        toastId: 'quote-success', // Add a unique ID to prevent duplicate toasts
+      });
+      // Clear the state to prevent showing the toast again on refresh
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
 
   useEffect(() => {
     if (isAuthenticated) {

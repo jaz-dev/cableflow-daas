@@ -38,7 +38,7 @@ export const Quote = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateQuantities(quantities)) {
       return;
     }
@@ -49,7 +49,7 @@ export const Quote = () => {
 
     // Form submission logic will be implemented later
     console.log('Form submitted', { files });
-    navigate('/cables');
+    navigate('/cables', { state: { showSuccessToast: true } });
   };
 
   const RequiredLabel = ({ children }: { children: React.ReactNode }) => (
