@@ -5,9 +5,11 @@ import { useAuth0 } from '@auth0/auth0-react';
 import clsx from 'clsx';
 import { FileUploadBox } from '../components/FileUploadBox';
 import { useNavigate } from 'react-router-dom';
+import { cablesApi } from '../api/cables';
+import { toast } from 'react-toastify';
 
 export const Quote = () => {
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [email, setEmail] = useState('');
   const [cableName, setCableName] = useState('');
   const [cableDescription, setCableDescription] = useState('');
@@ -16,6 +18,7 @@ export const Quote = () => {
   const [quantities, setQuantities] = useState('');
   const [quantitiesError, setQuantitiesError] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [files, setFiles] = useState<{ [key: string]: File | null }>({
     drawing: null,
     bom: null,
@@ -36,20 +39,47 @@ export const Quote = () => {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!validateQuantities(quantities)) {
       return;
     }
     if (files.drawing == null) {
-      alert('Please upload a drawing file before submitting.');
+      toast.error('Please upload a drawing file before submitting.');
       return;
     }
 
-    // Form submission logic will be implemented later
-    console.log('Form submitted', { files });
-    navigate('/cables', { state: { showSuccessToast: true } });
+    try {
+      setIsSubmitting(true);
+
+      // Parse quantities string into array of numbers
+      const quantitiesArray = quantities.split(',').map(q => parseInt(q.trim(), 10));
+
+      const formData = {
+        cable_name: cableName,
+        cable_description: cableDescription,
+        email: !isAuthenticated ? email : undefined,
+        delivery_date: hasDeliveryDate ? deliveryDate : undefined,
+        quantities: quantitiesArray,
+        additional_info: additionalInfo || undefined,
+        files: {
+          drawing: files.drawing || undefined,
+          bom: files.bom || undefined,
+          from_to: files.fromTo || undefined,
+        },
+      };
+
+      const token = await getAccessTokenSilently();
+      await cablesApi.create(formData, token);
+
+      navigate('/cables', { state: { showSuccessToast: true } });
+    } catch (error) {
+      console.error('Error submitting quote:', error);
+      toast.error('Failed to submit quote. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const RequiredLabel = ({ children }: { children: React.ReactNode }) => (
@@ -234,9 +264,13 @@ export const Quote = () => {
           <div className="flex justify-end">
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              disabled={isSubmitting}
+              className={clsx(
+                "px-6 py-2 bg-blue-600 text-white rounded-lg font-medium",
+                isSubmitting ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+              )}
             >
-              Submit Quote Request
+              {isSubmitting ? "Submitting..." : "Submit Quote Request"}
             </button>
           </div>
         </form>
