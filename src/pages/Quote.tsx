@@ -7,6 +7,7 @@ import { FileUploadBox } from '../components/FileUploadBox';
 import { useNavigate } from 'react-router-dom';
 import { cablesApi } from '../api/cables';
 import { toast } from 'react-toastify';
+import { CableStatus } from '../types/cable';
 
 export const Quote = () => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -58,7 +59,8 @@ export const Quote = () => {
 
       const formData = {
         cable_name: cableName,
-        cable_description: cableDescription,
+        status: CableStatus.QuoteRequested,
+        cable_description: cableDescription || undefined,
         email: !isAuthenticated ? email : undefined,
         delivery_date: hasDeliveryDate ? deliveryDate : undefined,
         quantities: quantitiesArray,
@@ -69,8 +71,7 @@ export const Quote = () => {
           from_to: files.fromTo || undefined,
         },
       };
-
-      const token = await getAccessTokenSilently();
+      const token = isAuthenticated ? await getAccessTokenSilently() : null;
       await cablesApi.create(formData, token);
 
       navigate('/cables', { state: { showSuccessToast: true } });

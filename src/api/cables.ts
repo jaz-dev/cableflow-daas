@@ -1,3 +1,5 @@
+import { CableStatus } from "../types/cable";
+
 interface CableFormData {
   cable_name: string;
   cable_description?: string;
@@ -5,6 +7,7 @@ interface CableFormData {
   delivery_date?: string;
   quantities: number[];
   additional_info?: string;
+  status?: CableStatus;
   files: {
     drawing?: File;
     bom?: File;
@@ -35,13 +38,14 @@ export const cablesApi = {
     return response.json();
   },
 
-  create: async (cable: CableFormData, token: string) => {    
+  create: async (cable: CableFormData, token?: string | null) => {    
     // Create FormData to handle file uploads
     const formData = new FormData();
     
     // Add JSON data
     formData.append('data', JSON.stringify({
       cable_name: cable.cable_name,
+      status: cable.status,
       cable_description: cable.cable_description,
       email: cable.email,
       delivery_date: cable.delivery_date,
@@ -60,18 +64,19 @@ export const cablesApi = {
       formData.append('from_to', cable.files.from_to);
     }
     
+    const headers: HeadersInit = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
     const response = await fetch(BASE_URL, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: headers,
       body: formData,
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
     return response.json();
   },
 
