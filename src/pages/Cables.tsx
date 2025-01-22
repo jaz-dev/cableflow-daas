@@ -8,6 +8,8 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { cablesApi } from '../api/cables';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { CableDetailsModal } from '../components/modals/CableDetailsModal';
+import { Cable, sampleCable } from '../types/cable';
 
 // Generate sample data
 const sampleData: CableOverview[] = Array.from({ length: 100 }, (_, i) => ({
@@ -25,6 +27,7 @@ export const Cables = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [cables, setCables] = useState<CableOverview[]>(sampleData);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCable, setSelectedCable] = useState<Cable | null>(sampleCable);
   const [cableToDelete, setCableToDelete] = useState<CableOverview | null>(null);
   const itemsPerPage = 10;
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -75,7 +78,8 @@ export const Cables = () => {
 
   const handleRowClick = (id: number) => {
     console.log(`Clicked cable ${id}`);
-    // Implementation for row click will come later
+    setSelectedCable(sampleCable);
+    console.log(selectedCable);
   };
 
   const handleNewCable = () => {
@@ -166,6 +170,11 @@ export const Cables = () => {
         )}
       </div>
 
+      <CableDetailsModal
+        isOpen={!!selectedCable}
+        onClose={() => setSelectedCable(null)}
+        cable={selectedCable!}
+      />
       <DeleteCableModal
         isOpen={!!cableToDelete}
         onClose={() => setCableToDelete(null)}
