@@ -65,7 +65,7 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
         <Dialog.Panel className="w-full max-w-4xl bg-white rounded-xl shadow-xl max-h-[90vh] flex flex-col">
           <div className="flex items-center justify-between p-6 border-b">
             <Dialog.Title className="text-xl font-semibold text-gray-900">
-              Cable Details
+              {cable.cable_name} Details
             </Dialog.Title>
             <button
               onClick={onClose}
