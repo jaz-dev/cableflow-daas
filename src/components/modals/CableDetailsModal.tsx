@@ -122,9 +122,25 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Created by
+                  Quantities Requested
                 </label>
-                <p className="text-gray-900">{cable.created_by || '-'}</p>
+                <p className="text-gray-900">
+                  {cable.quantities?.join(', ') || '-'}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Desired Delivery Date
+                </label>
+                <p className="text-gray-900">
+                  {cable.delivery_date ? new Date(cable.delivery_date).toLocaleDateString() : '-'}
+                </p>
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Additional Information
+                </label>
+                <p className="text-gray-900">{cable.additional_information || '-'}</p>
               </div>
             </div>
 

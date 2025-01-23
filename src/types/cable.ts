@@ -16,7 +16,9 @@ export interface CableOverview {
 
 export interface Cable extends CableOverview {
   cable_description?: string;
-  created_by?: string;
+  quantities: number[];
+  delivery_date?: string;
+  additional_information?: string;
   drawing?: File;
   bom?: File;
   from_to_table?: File;
@@ -41,6 +43,11 @@ export const sampleCable: Cable = {
   id: 1,
   cable_id: 'CBL-1001',
   cable_name: 'Power Cable Assembly',
+  quantities: [21,3,901],
+  delivery_date: '1/24/2025',
+  additional_information: 'He heard the loud impact before he ever saw the result. It had been so loud that it had actually made \
+  him jump back in his seat. As soon as he recovered from the surprise, he saw the crack in the windshield. It seemed to be \
+  an analogy of the current condition of his life.',
   status: CableStatus.QuoteReady,
   created_at: new Date().toISOString(),
   cable_description: 'He heard the loud impact before he ever saw the result. It had been so loud that it had actually made \
