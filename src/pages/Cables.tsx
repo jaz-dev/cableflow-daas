@@ -27,7 +27,7 @@ export const Cables = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [cables, setCables] = useState<CableOverview[]>(sampleData);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCable, setSelectedCable] = useState<Cable | null>(sampleCable);
+  const [selectedCable, setSelectedCable] = useState<Cable | null>(null);
   const [cableToDelete, setCableToDelete] = useState<CableOverview | null>(null);
   const itemsPerPage = 10;
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();

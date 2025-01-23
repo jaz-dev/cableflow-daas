@@ -3,6 +3,7 @@ import { Download, Eye, X } from 'lucide-react';
 import { useState } from 'react';
 import { Cable, CableStatus } from '../../types/cable';
 import { toast } from 'react-toastify';
+import { QuoteTable } from '../cables/QuoteTable';
 import clsx from 'clsx';
 
 interface CableDetailsModalProps {
@@ -52,8 +53,8 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
     </div>
   );
 
-  if (cable == null) {
-    return;
+  if (!cable) {
+    return null;
   }
   
   return (
@@ -61,7 +62,7 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
       
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-4xl bg-white rounded-xl shadow-xl">
+        <Dialog.Panel className="w-full max-w-4xl bg-white rounded-xl shadow-xl max-h-[90vh] flex flex-col">
           <div className="flex items-center justify-between p-6 border-b">
             <Dialog.Title className="text-xl font-semibold text-gray-900">
               Cable Details
@@ -74,7 +75,7 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
             </button>
           </div>
 
-          <div className="p-6 space-y-8">
+          <div className="p-6 space-y-8 overflow-y-auto">
             {/* Cable Information */}
             <div className="grid grid-cols-2 gap-6">
               <div>
@@ -156,7 +157,7 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
             </div>
 
             {/* Quote Section */}
-            {cable.status === CableStatus.QuoteReady ? (
+            {cable.status === CableStatus.QuoteReady && cable.quote_table ? (
               <div className="space-y-4">
                 {cable.quote_expiration && (
                   <p className="text-sm text-gray-600">
@@ -165,130 +166,23 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
                 )}
 
                 <div className="border rounded-lg overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-100">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Details
-                        </th>
-                        {cable.quote_table.map((quote, index) => (
-                          <th 
-                            key={index}
-                            onClick={() => setSelectedQuoteIndex(index)}
-                            className={clsx(
-                              'px-6 py-3 text-center cursor-pointer transition-colors',
-                              selectedQuoteIndex === index 
-                                ? 'bg-blue-50 border-2 border-blue-600' 
-                                : 'hover:bg-blue-50/50 hover:border hover:border-blue-300'
-                            )}
-                          >
-                            <div className="flex justify-center mb-2">
-                              <div 
-                                className={clsx(
-                                  'w-4 h-4 rounded-full border-2',
-                                  selectedQuoteIndex === index
-                                    ? 'border-blue-600 bg-blue-600'
-                                    : 'border-gray-400'
-                                )}
-                              />
-                            </div>
-                            <span className="text-sm font-medium text-gray-900">
-                              {quote.quantity}
-                            </span>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      <tr>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-green-100">
-                          Parts
-                        </td>
-                        {cable.quote_table.map((quote, index) => (
-                          <td 
-                            key={index}
-                            className={clsx(
-                              'px-6 py-4 text-center text-sm text-gray-900 bg-green-100',
-                              selectedQuoteIndex === index && 'border-x-2 border-blue-600'
-                            )}
-                          >
-                            ${quote.parts_price.toFixed(2)}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-green-100">
-                          Labor
-                        </td>
-                        {cable.quote_table.map((quote, index) => (
-                          <td 
-                            key={index}
-                            className={clsx(
-                              'px-6 py-4 text-center text-sm text-gray-900 bg-green-100',
-                              selectedQuoteIndex === index && 'border-x-2 border-blue-600'
-                            )}
-                          >
-                            ${quote.labor_price.toFixed(2)}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-green-100">
-                          Unit Price
-                        </td>
-                        {cable.quote_table.map((quote, index) => (
-                          <td 
-                            key={index}
-                            className={clsx(
-                              'px-6 py-4 text-center text-sm text-gray-900 bg-green-100',
-                              selectedQuoteIndex === index && 'border-x-2 border-blue-600'
-                            )}
-                          >
-                            ${quote.unit_price.toFixed(2)}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-green-100">
-                          Extended Price
-                        </td>
-                        {cable.quote_table.map((quote, index) => (
-                          <td 
-                            key={index}
-                            className={clsx(
-                              'px-6 py-4 text-center text-sm text-gray-900 bg-green-100',
-                              selectedQuoteIndex === index && 'border-x-2 border-blue-600'
-                            )}
-                          >
-                            ${quote.extended_price.toFixed(2)}
-                          </td>
-                        ))}
-                      </tr>
-                      <tr>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900 bg-blue-100">
-                          Lead Time
-                        </td>
-                        {cable.quote_table.map((quote, index) => (
-                          <td 
-                            key={index}
-                            className={clsx(
-                              'px-6 py-4 text-center text-sm text-gray-900 bg-blue-100',
-                              selectedQuoteIndex === index && 'border-x-2 border-blue-600'
-                            )}
-                          >
-                            {quote.lead_time}
-                          </td>
-                        ))}
-                      </tr>
-                    </tbody>
-                  </table>
+                  <QuoteTable
+                    quotes={cable.quote_table}
+                    selectedQuoteIndex={selectedQuoteIndex}
+                    onQuoteSelect={setSelectedQuoteIndex}
+                  />
                 </div>
 
                 {cable.notes && (
                   <p className="text-sm text-gray-600">{cable.notes}</p>
                 )}
 
-                <div className="flex justify-end">
+                <div className="flex justify-end items-center gap-4">
+                  {selectedQuoteIndex !== null && (
+                    <p className="text-lg font-bold text-gray-900">
+                      Total: ${cable.quote_table[selectedQuoteIndex].extended_price.toFixed(2)}
+                    </p>
+                  )}
                   <button
                     onClick={handleAddToCart}
                     disabled={selectedQuoteIndex === null}
