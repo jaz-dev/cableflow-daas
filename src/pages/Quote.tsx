@@ -56,14 +56,15 @@ export const Quote = () => {
 
       // Parse quantities string into array of numbers
       const quantitiesArray = quantities.split(',').map(q => parseInt(q.trim(), 10));
-
+      const quantitiesString = JSON.stringify(quantitiesArray);
+      
       const formData = {
         cable_name: cableName,
         status: CableStatus.QuoteRequested,
         cable_description: cableDescription || undefined,
         email: !isAuthenticated ? email : undefined,
         delivery_date: hasDeliveryDate ? deliveryDate : undefined,
-        quantities: quantitiesArray,
+        quantities: quantitiesString,
         additional_info: additionalInfo || undefined,
         files: {
           drawing: files.drawing || undefined,

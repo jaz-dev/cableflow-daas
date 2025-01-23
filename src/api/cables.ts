@@ -5,7 +5,7 @@ interface CableFormData {
   cable_description?: string;
   email?: string;
   delivery_date?: string;
-  quantities: number[];
+  quantities: string;
   additional_info?: string;
   status?: CableStatus;
   files: {
