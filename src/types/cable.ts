@@ -53,7 +53,6 @@ export const sampleCable: Cable = {
   cable_description: 'He heard the loud impact before he ever saw the result. It had been so loud that it had actually made \
   him jump back in his seat. As soon as he recovered from the surprise, he saw the crack in the windshield. It seemed to be \
   an analogy of the current condition of his life.',
-  created_by: 'engineer@example.com',
   drawing: new File([''], 'drawing.pdf', { type: 'application/pdf' }),
   bom: new File([''], 'bom.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
   from_to_table: new File([''], 'from_to.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),

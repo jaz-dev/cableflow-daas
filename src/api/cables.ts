@@ -80,9 +80,9 @@ export const cablesApi = {
     return response.json();
   },
 
-  delete: async (id: string, token: string) => {
+  delete: async (cableId: string, token: string) => {
     const headers = await cablesApi.getAuthHeaders(token);
-    const response = await fetch(`${BASE_URL}/${id}`, {
+    const response = await fetch(`${BASE_URL}/${cableId}`, {
       method: 'DELETE',
       headers,
     });
@@ -91,4 +91,14 @@ export const cablesApi = {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
   },
+
+  // fetch: async (cableId: string, token: string) => {
+  //   const headers = await cablesApi.getAuthHeaders(token);
+  //   const response = await fetch(`${BASE_URL}/${cableId}`, { headers });
+  //   if (!response.ok) {
+  //     throw new Error(`HTTP error! status: ${response.status}`);
+  //   }
+
+  //   return response.json();
+  // },
 };

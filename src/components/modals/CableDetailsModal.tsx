@@ -45,7 +45,10 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
         >
           <Download className="h-5 w-5" />
         </button>
-        <span className="text-sm text-gray-900">{file.name}</span>
+        <div>
+          <div className="text-sm font-medium text-gray-900">{fileType}</div>
+          <div className="text-sm text-gray-500">{file.name}</div>
+        </div>
       </div>
       {isModified && (
         <p className="text-sm text-gray-500">File has been revised and reuploaded</p>
@@ -147,27 +150,33 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
             {/* Files */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-gray-900">Files</h3>
-              <div className="space-y-4">
+              <div className="space-y-6 divide-y divide-gray-200">
                 {cable.drawing && (
-                  <FileActions 
-                    fileType="Drawing" 
-                    file={cable.drawing} 
-                    isModified={cable.drawing_modified} 
-                  />
+                  <div className="pt-4">
+                    <FileActions 
+                      fileType="Drawing" 
+                      file={cable.drawing} 
+                      isModified={cable.drawing_modified} 
+                    />
+                  </div>
                 )}
                 {cable.bom && (
-                  <FileActions 
-                    fileType="BOM" 
-                    file={cable.bom} 
-                    isModified={cable.bom_modified} 
-                  />
+                  <div className="pt-4">
+                    <FileActions 
+                      fileType="BOM" 
+                      file={cable.bom} 
+                      isModified={cable.bom_modified} 
+                    />
+                  </div>
                 )}
                 {cable.from_to_table && (
-                  <FileActions 
-                    fileType="From-To Table" 
-                    file={cable.from_to_table} 
-                    isModified={cable.from_to_table_modified} 
-                  />
+                  <div className="pt-4">
+                    <FileActions 
+                      fileType="From-To Table" 
+                      file={cable.from_to_table} 
+                      isModified={cable.from_to_table_modified} 
+                    />
+                  </div>
                 )}
               </div>
             </div>
