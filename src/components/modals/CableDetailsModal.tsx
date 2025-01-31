@@ -43,7 +43,6 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
     } else if(fileType === 'From-To Table') {
       window.open(fromToBlobUrl, '_blank');
     }
-    console.log(`Viewing ${fileType}`);
   };
 
   const handleFileDownload = (fileType: string, fileInfo: CableFileInfo) => {
