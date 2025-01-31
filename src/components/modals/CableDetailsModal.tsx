@@ -1,7 +1,7 @@
 import { Dialog } from '@headlessui/react';
 import { Download, Eye, X } from 'lucide-react';
-import { useState } from 'react';
-import { Cable, CableStatus } from '../../types/cable';
+import { useEffect, useState } from 'react';
+import { Cable, CableFileInfo, CableStatus } from '../../types/cable';
 import { toast } from 'react-toastify';
 import { QuoteTable } from '../cables/QuoteTable';
 import clsx from 'clsx';
@@ -14,6 +14,21 @@ interface CableDetailsModalProps {
 
 export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalProps) => {
   const [selectedQuoteIndex, setSelectedQuoteIndex] = useState<number | null>(null);
+  const [drawingBlobUrl, setDrawingBlobUrl] = useState<string | undefined>(undefined);
+  const [bomBlobUrl, setBomBlobUrl] = useState<string | undefined>(undefined);
+  const [fromToBlobUrl, setFromToBlobUrl] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (cable?.files?.drawing) {
+      setDrawingBlobUrl(base64ToBlobUrl(cable.files.drawing));
+    }
+    if (cable?.files?.bom) {
+      setBomBlobUrl(base64ToBlobUrl(cable.files.bom));
+    }
+    if (cable?.files?.from_to) {
+      setFromToBlobUrl(base64ToBlobUrl(cable.files.from_to));
+    }
+  }, [cable]);
 
   const handleAddToCart = () => {
     toast.success('Cable Added to Cart');
@@ -21,33 +36,65 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
   };
 
   const handleFileView = (fileType: string) => {
-    // In a real app, this would open the file in a new tab or viewer
+    if(fileType === 'Drawing') {
+      window.open(drawingBlobUrl, '_blank');
+    } else if(fileType === 'BOM') {
+      window.open(bomBlobUrl, '_blank');
+    } else if(fileType === 'From-To Table') {
+      window.open(fromToBlobUrl, '_blank');
+    }
     console.log(`Viewing ${fileType}`);
   };
 
-  const handleFileDownload = (fileType: string) => {
-    // In a real app, this would trigger the file download
-    console.log(`Downloading ${fileType}`);
+  const handleFileDownload = (fileType: string, fileInfo: CableFileInfo) => {
+    const link = document.createElement("a");
+    if(fileType === 'Drawing') {
+      link.href = drawingBlobUrl || '';
+    } else if(fileType === 'BOM') {
+      link.href = bomBlobUrl || '';
+    } else if(fileType === 'From-To Table') {
+      link.href = fromToBlobUrl || '';
+    }
+    link.download = fileInfo.file_name; // Change filename as needed
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
-  const FileActions = ({ fileType, file, isModified }: { fileType: string; file: File; isModified: boolean }) => (
+  const base64ToBlobUrl = (fileInfo: CableFileInfo ) => {
+    const mimeType = fileInfo.file_content_type ? fileInfo.file_content_type : "application/octet-stream";
+    const byteCharacters = atob(fileInfo.file_content); // Decode Base64
+    const byteNumbers = new Uint8Array(byteCharacters.length);
+  
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+  
+    const blob = new Blob([byteNumbers], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    return url;
+  };
+
+  const FileActions = ({ fileType, file, isModified }: { fileType: string; file: CableFileInfo; isModified: boolean }) => (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
+        {fileType === 'Drawing' && (
+          <button
+            onClick={() => handleFileView(fileType)}
+            className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <Eye className="h-5 w-5" />
+          </button>
+        )}
         <button
-          onClick={() => handleFileView(fileType)}
-          className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
-        >
-          <Eye className="h-5 w-5" />
-        </button>
-        <button
-          onClick={() => handleFileDownload(fileType)}
+          onClick={() => handleFileDownload(fileType, file)}
           className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
         >
           <Download className="h-5 w-5" />
         </button>
         <div>
           <div className="text-sm font-medium text-gray-900">{fileType}</div>
-          <div className="text-sm text-gray-500">{file.name}</div>
+          <div className="text-sm text-gray-500">{file.file_name}</div>
         </div>
       </div>
       {isModified && (
@@ -151,29 +198,29 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-gray-900">Files</h3>
               <div className="space-y-6 divide-y divide-gray-200">
-                {cable.drawing && (
+                {cable?.files?.drawing && (
                   <div className="pt-4">
                     <FileActions 
                       fileType="Drawing" 
-                      file={cable.drawing} 
+                      file={cable.files.drawing} 
                       isModified={cable.drawing_modified} 
                     />
                   </div>
                 )}
-                {cable.bom && (
+                {cable?.files?.bom && (
                   <div className="pt-4">
                     <FileActions 
                       fileType="BOM" 
-                      file={cable.bom} 
+                      file={cable.files.bom} 
                       isModified={cable.bom_modified} 
                     />
                   </div>
                 )}
-                {cable.from_to_table && (
+                {cable?.files?.from_to && (
                   <div className="pt-4">
                     <FileActions 
                       fileType="From-To Table" 
-                      file={cable.from_to_table} 
+                      file={cable.files.from_to} 
                       isModified={cable.from_to_table_modified} 
                     />
                   </div>

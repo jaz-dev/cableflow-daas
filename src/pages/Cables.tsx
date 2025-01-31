@@ -76,10 +76,15 @@ export const Cables = () => {
     }
   };
 
-  const handleRowClick = (id: number) => {
-    console.log(`Clicked cable ${id}`);
-    setSelectedCable(sampleCable);
-    console.log(selectedCable);
+  const handleRowClick = async (id: number) => {
+    if (isAuthenticated) {
+      const selectedCable = await cablesApi.fetch(id, await getAccessTokenSilently());
+      if (selectedCable) {
+        setSelectedCable(selectedCable);
+      }
+    } else {
+      setSelectedCable(sampleCable);
+    }
   };
 
   const handleNewCable = () => {

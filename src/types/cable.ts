@@ -19,15 +19,19 @@ export interface Cable extends CableOverview {
   quantities: number[];
   delivery_date?: string;
   additional_information?: string;
-  drawing?: File;
-  bom?: File;
-  from_to_table?: File;
-  drawing_modified?: boolean;
-  bom_modified?: boolean;
-  from_to_table_modified?: boolean;
+  files?: { [key: string]: CableFileInfo };
+  drawing_modified: boolean;
+  bom_modified: boolean;
+  from_to_table_modified: boolean;
   quote_table?: Quote[];
   quote_expiration?: Date | string;
   notes?: string;
+}
+
+export interface CableFileInfo {
+  file_name: string;
+  file_content: string;
+  file_content_type: string;
 }
 
 interface Quote {
@@ -53,9 +57,6 @@ export const sampleCable: Cable = {
   cable_description: 'He heard the loud impact before he ever saw the result. It had been so loud that it had actually made \
   him jump back in his seat. As soon as he recovered from the surprise, he saw the crack in the windshield. It seemed to be \
   an analogy of the current condition of his life.',
-  drawing: new File([''], 'drawing.pdf', { type: 'application/pdf' }),
-  bom: new File([''], 'bom.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-  from_to_table: new File([''], 'from_to.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
   drawing_modified: false,
   bom_modified: true,
   from_to_table_modified: false,
