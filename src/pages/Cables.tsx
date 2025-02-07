@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { CableDetailsModal } from '../components/modals/CableDetailsModal';
 import { Cable, sampleCable } from '../types/cable';
+import { CartModal } from '../components/modals/CartModal';
 
 // Generate sample data
 const sampleData: CableOverview[] = Array.from({ length: 100 }, (_, i) => ({
@@ -29,6 +30,7 @@ export const Cables = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCable, setSelectedCable] = useState<Cable | null>(null);
   const [cableToDelete, setCableToDelete] = useState<CableOverview | null>(null);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const itemsPerPage = 10;
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
@@ -89,6 +91,11 @@ export const Cables = () => {
 
   const handleNewCable = () => {
     navigate('/quote');
+  };
+
+  const handleCheckout = () => {
+    // Implement checkout logic
+    setIsCartModalOpen(false);
   };
 
   const filteredCables = useMemo(() => {
@@ -179,12 +186,18 @@ export const Cables = () => {
         isOpen={!!selectedCable}
         onClose={() => setSelectedCable(null)}
         cable={selectedCable!}
+        onAddToCart={() => setIsCartModalOpen(true)}
       />
       <DeleteCableModal
         isOpen={!!cableToDelete}
         onClose={() => setCableToDelete(null)}
         onConfirm={handleConfirmDelete}
         cableName={cableToDelete?.cable_name || ''}
+      />
+      <CartModal
+        isOpen={isCartModalOpen}
+        onClose={() => setIsCartModalOpen(false)}
+        onCheckout={handleCheckout}
       />
     </div>
   );

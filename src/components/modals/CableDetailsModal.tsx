@@ -2,21 +2,27 @@ import { Dialog } from '@headlessui/react';
 import { Download, Eye, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Cable, CableFileInfo, CableStatus } from '../../types/cable';
-import { toast } from 'react-toastify';
 import { QuoteTable } from '../cables/QuoteTable';
 import clsx from 'clsx';
+import { cartApi } from '../../api/cartItems';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useCartStore } from '../../stores/cartStore';
 
 interface CableDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   cable: Cable;
+  onAddToCart?: () => void;
 }
 
-export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalProps) => {
+export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: CableDetailsModalProps) => {
   const [selectedQuoteIndex, setSelectedQuoteIndex] = useState<number | null>(null);
   const [drawingBlobUrl, setDrawingBlobUrl] = useState<string | undefined>(undefined);
   const [bomBlobUrl, setBomBlobUrl] = useState<string | undefined>(undefined);
   const [fromToBlobUrl, setFromToBlobUrl] = useState<string | undefined>(undefined);
+  const { getAccessTokenSilently } = useAuth0();
+  const {  addItem } = useCartStore();
+
 
   useEffect(() => {
     if (cable?.files?.drawing) {
@@ -30,9 +36,16 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
     }
   }, [cable]);
 
-  const handleAddToCart = () => {
-    toast.success('Cable Added to Cart');
+  const handleAddToCart = async() => {
+    if (selectedQuoteIndex === null || !cable.quote_table) return;
+    
+    const selectedQuote = cable.quote_table[selectedQuoteIndex];
+    const token = await getAccessTokenSilently();
+    await addItem(token, cable.id, selectedQuote.quantity, selectedQuote.extended_price);
     onClose();
+    if (onAddToCart) {
+      onAddToCart();
+    }
   };
 
   const handleFileView = (fileType: string) => {
@@ -54,7 +67,7 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
     } else if(fileType === 'From-To Table') {
       link.href = fromToBlobUrl || '';
     }
-    link.download = fileInfo.file_name; // Change filename as needed
+    link.download = fileInfo.file_name;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -62,7 +75,7 @@ export const CableDetailsModal = ({ isOpen, onClose, cable }: CableDetailsModalP
 
   const base64ToBlobUrl = (fileInfo: CableFileInfo ) => {
     const mimeType = fileInfo.file_content_type ? fileInfo.file_content_type : "application/octet-stream";
-    const byteCharacters = atob(fileInfo.file_content); // Decode Base64
+    const byteCharacters = atob(fileInfo.file_content);
     const byteNumbers = new Uint8Array(byteCharacters.length);
   
     for (let i = 0; i < byteCharacters.length; i++) {

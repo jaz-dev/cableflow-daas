@@ -10,7 +10,7 @@ export const cartApi = {
 
   getCartItems: async (token: string) => {
     const headers = await cartApi.getAuthHeaders(token);
-    const response = await fetch(`${BASE_URL}/cart`, { headers });
+    const response = await fetch(`${BASE_URL}`, { headers });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -19,7 +19,7 @@ export const cartApi = {
 
   addCartItem: async (token: string, cableId: number, quantity: number, price: number) => {
     const headers = await cartApi.getAuthHeaders(token);
-    const response = await fetch(`${BASE_URL}/cart`, {
+    const response = await fetch(`${BASE_URL}`, {
       method: 'POST',
       headers,
       body: JSON.stringify({ cable_id: cableId, quantity, price }),
@@ -32,13 +32,13 @@ export const cartApi = {
 
   deleteCartItem: async (token: string, cartItemId: number) => {
     const headers = await cartApi.getAuthHeaders(token);
-    const response = await fetch(`${BASE_URL}/cart/${cartItemId}`, {
+    const response = await fetch(`${BASE_URL}/${cartItemId}`, {
       method: 'DELETE',
       headers,
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    return response.json();
+    return response.status
   },
 }
