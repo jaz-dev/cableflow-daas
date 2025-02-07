@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Cable, CableFileInfo, CableStatus } from '../../types/cable';
 import { QuoteTable } from '../cables/QuoteTable';
 import clsx from 'clsx';
-import { cartApi } from '../../api/cartItems';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCartStore } from '../../stores/cartStore';
 
