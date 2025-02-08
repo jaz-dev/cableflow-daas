@@ -38,9 +38,8 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
   const handleAddToCart = async() => {
     if (selectedQuoteIndex === null || !cable.quote_table) return;
     
-    const selectedQuote = cable.quote_table[selectedQuoteIndex];
     const token = await getAccessTokenSilently();
-    await addItem(token, cable.id, selectedQuote.quantity, selectedQuote.extended_price);
+    await addItem(token, cable.id, selectedQuoteIndex);
     onClose();
     if (onAddToCart) {
       onAddToCart();

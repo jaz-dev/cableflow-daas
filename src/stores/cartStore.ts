@@ -5,7 +5,7 @@ import { cartApi } from '../api/cartItems';
 interface CartStore {
   items: CartItem[];
   fetchItems: (token: string) => Promise<void>;
-  addItem: (token: string, cableId: number, quantity: number, price: number) => Promise<void>;
+  addItem: (token: string, cableId: number, selectedQuoteIndex: number) => Promise<void>;
   removeItem: (token: string, id: number) => void;
   clearCart: () => void;
 }
@@ -16,8 +16,8 @@ export const useCartStore = create<CartStore>((set) => ({
     const items = await cartApi.getCartItems(token);
     set({ items: items });
   },
-  addItem: async (token: string, cableId: number, quantity: number, price: number) => { 
-    const newCartItem: CartItem  = await cartApi.addCartItem(token, cableId, quantity, price);
+  addItem: async (token: string, cableId: number, selectedQuoteIndex: number) => { 
+    const newCartItem: CartItem  = await cartApi.addCartItem(token, cableId, selectedQuoteIndex);
     set((state) =>({
       items: [newCartItem, ...state.items]
     }))

@@ -17,12 +17,12 @@ export const cartApi = {
     return response.json();
   },
 
-  addCartItem: async (token: string, cableId: number, quantity: number, price: number) => {
+  addCartItem: async (token: string, cableId: number, selectedQuoteIndex: number) => {
     const headers = await cartApi.getAuthHeaders(token);
     const response = await fetch(`${BASE_URL}`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ cable_id: cableId, quantity, price }),
+      body: JSON.stringify({ cable_id: cableId, quote_index: selectedQuoteIndex }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
