@@ -16,11 +16,6 @@ export const Header = () => {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const { items, fetchItems, isCartModalOpen, setIsCartModalOpen } = useCartStore();
 
-  const handleCheckout = () => {
-    // Implement checkout logic
-    setIsCartModalOpen(false);
-  };
-
   useEffect(() => {
     if (isAuthenticated) {
       const fetchData = async () => {
@@ -96,7 +91,6 @@ export const Header = () => {
       <CartModal
         isOpen={isCartModalOpen}
         onClose={() => setIsCartModalOpen(false)}
-        onCheckout={handleCheckout}
       />
     </header>
   );

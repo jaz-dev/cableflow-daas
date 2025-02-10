@@ -35,6 +35,7 @@ export const Cables = () => {
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Show success toast if navigating from quote submission
@@ -53,6 +54,7 @@ export const Cables = () => {
         try {
           const token = await getAccessTokenSilently();
           setCables(await cablesApi.fetchAll(token));
+          setIsLoading(false);
         } catch (err) {
           console.error("Error fetching token:", err);
         }
@@ -121,6 +123,9 @@ export const Cables = () => {
     setCurrentPage(1);
   };
 
+  if (isLoading) {
+    return;
+  }
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
