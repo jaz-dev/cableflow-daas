@@ -4,6 +4,8 @@ import { cartApi } from '../api/cartItems';
 
 interface CartStore {
   items: CartItem[];
+  isCartModalOpen: boolean;
+  setIsCartModalOpen: (isOpen: boolean) => void;
   fetchItems: (token: string) => Promise<void>;
   addItem: (token: string, cableId: number, selectedQuoteIndex: number) => Promise<void>;
   removeItem: (token: string, id: number) => void;
@@ -12,6 +14,8 @@ interface CartStore {
 
 export const useCartStore = create<CartStore>((set) => ({
   items: [],
+  isCartModalOpen: false,
+  setIsCartModalOpen: (isOpen: boolean) => set({ isCartModalOpen: isOpen }),
   fetchItems: async (token) => {
     const items = await cartApi.getCartItems(token);
     set({ items: items });

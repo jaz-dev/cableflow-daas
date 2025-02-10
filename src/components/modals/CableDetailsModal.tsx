@@ -20,8 +20,7 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
   const [bomBlobUrl, setBomBlobUrl] = useState<string | undefined>(undefined);
   const [fromToBlobUrl, setFromToBlobUrl] = useState<string | undefined>(undefined);
   const { getAccessTokenSilently } = useAuth0();
-  const {  addItem } = useCartStore();
-
+  const { addItem } = useCartStore();
 
   useEffect(() => {
     if (cable?.files?.drawing) {

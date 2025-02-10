@@ -14,8 +14,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
-  const { items, fetchItems } = useCartStore();
+  const { items, fetchItems, isCartModalOpen, setIsCartModalOpen } = useCartStore();
 
   const handleCheckout = () => {
     // Implement checkout logic

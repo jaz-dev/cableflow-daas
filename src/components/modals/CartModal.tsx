@@ -7,27 +7,12 @@ import { useCartStore } from '../../stores/cartStore';
 interface CartModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCheckout: () => void;
 }
 
-export const CartModal = ({ isOpen, onClose, onCheckout }: CartModalProps) => {
+export const CartModal = ({ isOpen, onClose }: CartModalProps) => {
   const [ subtotal, setSubtotal ] = useState(0);
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
-  const { fetchItems, items, removeItem } = useCartStore();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      const fetchData = async () => {
-        try {
-          const token = await getAccessTokenSilently();
-          fetchItems(token);
-        } catch (err) {
-          console.error("Error fetching cart items:", err);
-        }
-      };
-      fetchData();
-    }
-  }, [getAccessTokenSilently, isAuthenticated, fetchItems]);
+  const { getAccessTokenSilently } = useAuth0();
+  const { items, removeItem } = useCartStore();
 
   useEffect(() => {
     const subTotal = items.reduce((sum, item) => sum + item.price, 0);
