@@ -39,6 +39,31 @@ export const CartModal = ({ isOpen, onClose, onCheckout }: CartModalProps) => {
     await removeItem(token, id);
   };
 
+  const handleCheckout = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+      const returnUrl = window.location.href;
+      console.log("returnnUrl: ", returnUrl);
+      const response = await fetch(`${import.meta.env.VITE_CABLEFLOW_API_URL}/api/stripe/create-checkout-session`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          return_url: returnUrl,
+        })
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const { session_url }= await response.json();
+      window.location.href = session_url;
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+    }
+  };
+  
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
@@ -116,9 +141,8 @@ export const CartModal = ({ isOpen, onClose, onCheckout }: CartModalProps) => {
                 </div>
               </div>
             </div>
-
             <button
-              onClick={onCheckout}
+              onClick={handleCheckout}
               disabled={items.length === 0}
               className="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >

@@ -7,6 +7,7 @@ import { PersonalInfo } from './pages/account/PersonalInfo';
 import { BlankPage } from './pages/BlankPage';
 import { Cables } from './pages/Cables';
 import { Quote } from './pages/Quote';
+import Orders from './pages/Orders';
 
 function App() {
   return (
@@ -16,7 +17,7 @@ function App() {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Cables />} />
             <Route path="cables" element={<Cables />} />
-            <Route path="orders" element={<BlankPage />} />
+            <Route path="orders" element={<Orders />} />
             <Route path="shipping" element={<BlankPage />} />
             <Route path="account/personal" element={<PersonalInfo />} />
             <Route path="quote" element={<Quote />} />
@@ -27,5 +28,4 @@ function App() {
     </BrowserRouter>
   );
 }
-
 export default App;
