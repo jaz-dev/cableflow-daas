@@ -8,7 +8,7 @@ export interface Order {
 
 export interface OrderItem {
   id: number;
-  cable_id: string;
+  cable_id: number;
   cable_extended_id: string;
   cable_name: string;
   cable_quantity: number;
