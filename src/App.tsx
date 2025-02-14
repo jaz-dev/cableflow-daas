@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './providers/AuthProvider';
 import { MainLayout } from './components/Layout/MainLayout';
 import { PersonalInfo } from './pages/account/PersonalInfo';
-import { BlankPage } from './pages/BlankPage';
+//import { BlankPage } from './pages/BlankPage';
 import { Cables } from './pages/Cables';
 import { Quote } from './pages/Quote';
 import Orders from './pages/Orders';
@@ -18,7 +18,7 @@ function App() {
             <Route index element={<Cables />} />
             <Route path="cables" element={<Cables />} />
             <Route path="orders" element={<Orders />} />
-            <Route path="shipping" element={<BlankPage />} />
+            {/* <Route path="shipping" element={<BlankPage />} /> */}
             <Route path="account/personal" element={<PersonalInfo />} />
             <Route path="quote" element={<Quote />} />
           </Route>

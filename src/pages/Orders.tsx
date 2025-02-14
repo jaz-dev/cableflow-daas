@@ -8,7 +8,6 @@ import { Cable } from '../types/cable';
 import { CableDetailsModal } from '../components/modals/CableDetailsModal';
 import { ordersApi } from '../api/orders';
 import { cablesApi } from '../api/cables';
-import clsx from 'clsx';
 
 interface ExpandedOrders {
   [key: number]: number;
@@ -111,8 +110,8 @@ export const Orders = () => {
               <div className="bg-gray-100 px-6 py-4">
                 <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
                   <div>
-                    <div className="text-sm font-medium uppercase text-gray-600">ORDER PLACED</div>
-                    <div className="text-gray-900">
+                    <div className="text-xs font-medium uppercase text-gray-600">ORDER PLACED</div>
+                    <div className="text-sm text-gray-900">
                       {new Date(order.created_at).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
@@ -121,8 +120,8 @@ export const Orders = () => {
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm font-medium uppercase text-gray-600">TOTAL</div>
-                    <div className="text-gray-900">${order.total_price.toFixed(2)}</div>
+                    <div className="text-xs font-medium uppercase text-gray-600">TOTAL</div>
+                    <div className="text-sm text-gray-900">${order.total_price.toFixed(2)}</div>
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-gray-600">ORDER # {order.extended_id}</div>
