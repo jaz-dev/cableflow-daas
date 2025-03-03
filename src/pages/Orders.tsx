@@ -19,7 +19,7 @@ export const Orders = () => {
   const [expandedOrders, setExpandedOrders] = useState<ExpandedOrders>({});
   const [selectedCable, setSelectedCable] = useState<Cable | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   
   useEffect(() => {
     const success = searchParams.get('success');
@@ -34,29 +34,31 @@ export const Orders = () => {
   }, [searchParams, setSearchParams]);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const token = await getAccessTokenSilently();
-        const fetchedOrders = await ordersApi.getOrders(token);
-        setOrders(fetchedOrders);
-        
-        // Initialize expanded state for each order
-        const initialExpanded: ExpandedOrders = {};
-        fetchedOrders.forEach(order => {
-          initialExpanded[order.id] = 3; // Show first 3 items
-        });
-        setExpandedOrders(initialExpanded);
-        
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-        toast.error('Failed to load orders');
-        setIsLoading(false);
-      }
-    };
+    if (isAuthenticated) {
+      const fetchOrders = async () => {
+        try {
+          const token = await getAccessTokenSilently();
+          const fetchedOrders = await ordersApi.getOrders(token);
+          setOrders(fetchedOrders);
+          
+          // Initialize expanded state for each order
+          const initialExpanded: ExpandedOrders = {};
+          fetchedOrders.forEach(order => {
+            initialExpanded[order.id] = 3; // Show first 3 items
+          });
+          setExpandedOrders(initialExpanded);
+          
+          setIsLoading(false);
+        } catch (error) {
+          console.error('Error fetching orders:', error);
+          toast.error('Failed to load orders');
+          setIsLoading(false);
+        }
+      };
 
-    fetchOrders();
-  }, [getAccessTokenSilently]);
+      fetchOrders();
+    }
+  }, [getAccessTokenSilently, isAuthenticated]);
 
   const handleViewMore = (orderId: number, totalItems: number) => {
     setExpandedOrders(prev => ({
