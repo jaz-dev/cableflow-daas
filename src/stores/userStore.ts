@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { usersApi, User } from '../api/users';
 
 interface UserStore {
-  curentUser: User | null;
+  user: User | null;
   users: User[];
   isLoading: boolean;
   error: string | null;
@@ -12,7 +12,7 @@ interface UserStore {
 }
 
 export const useUserStore = create<UserStore>((set) => ({
-  curentUser: null,
+  user: null,
   users: [],
   isLoading: false,
   error: null,
@@ -20,7 +20,7 @@ export const useUserStore = create<UserStore>((set) => ({
   fetchUser: async (token) => {
     try {
       const user = await usersApi.fetchUser(token);
-      set({ curentUser: user});
+      set({ user: user});
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
       console.error('Error fetching user:', error);
@@ -40,5 +40,17 @@ export const useUserStore = create<UserStore>((set) => ({
 
   updateUser: async (token, updates) => {
     set({ isLoading: true, error: null });
+    try {
+      const updatedUser = await usersApi.updateUser(token, updates);
+      set({
+        user: updatedUser,
+        isLoading: false
+      });
+      return updatedUser;
+    } catch (error) {
+      set({ error: (error as Error).message, isLoading: false });
+      console.error('Error updating user:', error);
+      throw error;
+    }
   },
 }));

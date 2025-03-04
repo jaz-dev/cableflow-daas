@@ -8,9 +8,11 @@ import { ContactModal } from '../modals/ContactModal';
 import { CartModal } from '../modals/CartModal';
 import { useCartStore } from '../../stores/cartStore';
 import clsx from 'clsx';
+import { useUserStore } from '../../stores/userStore';
 
 export const Header = () => {
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { user, fetchUser } = useUserStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
@@ -29,6 +31,20 @@ export const Header = () => {
       fetchData();
     }
   }, [isAuthenticated, fetchItems, getAccessTokenSilently]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const fetchUserData = async () => {
+        try {
+          const token = await getAccessTokenSilently();
+          await fetchUser(token);
+        } catch (err) {
+          console.error("Error fetching user:", err);
+        }
+      };
+      fetchUserData();
+    }
+  }, [isAuthenticated, fetchUser, getAccessTokenSilently]);
 
   return (
     <header className="bg-white border-b border-gray-200 h-16 flex items-center px-4 justify-between">
@@ -71,10 +87,10 @@ export const Header = () => {
         {isAuthenticated ? (
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
-              {user?.name?.[0]?.toUpperCase()}
+              {user?.first_name?.[0]?.toUpperCase()}
             </div>
             <div className="text-right">
-              <div className="text-sm font-medium text-gray-900">{user?.name}</div>
+              <div className="text-sm font-medium text-gray-900">{user?.first_name} {user?.last_name}</div>
               <div className="text-xs text-gray-500">{user?.email}</div>
             </div>
           </div>

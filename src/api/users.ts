@@ -40,45 +40,18 @@ export const usersApi = {
     return response.json();
   },
 
-  // create: async (project: NewProject, token: string) => {
-  //   const headers = await projectsApi.getAuthHeaders(token);
-  //   const response = await fetch(BASE_URL, {
-  //     method: 'POST',
-  //     headers,
-  //     body: JSON.stringify(project),
-  //   });
+  updateUser: async (token: string, updates: { first_name?: string; last_name?: string }) => {
+    const headers = await usersApi.getAuthHeaders(token);
+    const response = await fetch(`${BASE_URL}/me`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(updates),
+    });
 
-  //   if (!response.ok) {
-  //     throw new Error(`HTTP error! status: ${response.status}`);
-  //   }
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-  //   return response.json();
-  // },
-
-  // update: async (projectId: string, updates: Partial<Project>) => {
-  //   const headers = await projectsApi.getAuthHeaders();
-  //   const response = await fetch(`${BASE_URL}/${projectId}`, {
-  //     method: 'PUT',
-  //     headers,
-  //     body: JSON.stringify(updates),
-  //   });
-
-  //   if (!response.ok) {
-  //     throw new Error(`HTTP error! status: ${response.status}`);
-  //   }
-
-  //   return response.json();
-  // },
-
-  // delete: async (projectId: string) => {
-  //   const headers = await projectsApi.getAuthHeaders();
-  //   const response = await fetch(`${BASE_URL}/${projectId}`, {
-  //     method: 'DELETE',
-  //     headers,
-  //   });
-
-  //   if (!response.ok) {
-  //     throw new Error(`HTTP error! status: ${response.status}`);
-  //   }
-  // },
+    return response.json();
+  },
 };
