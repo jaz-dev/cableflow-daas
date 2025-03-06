@@ -34,7 +34,7 @@ export interface CableFileInfo {
   file_content_type: string;
 }
 
-interface Quote {
+export interface Quote {
   quantity: number;
   parts_price: number;
   labor_price: number;

@@ -1,7 +1,7 @@
 import { Dialog } from '@headlessui/react';
 import { Download, Eye, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Cable, CableFileInfo, CableStatus } from '../../types/cable';
+import { Cable, CableFileInfo, CableStatus, Quote } from '../../types/cable';
 import { QuoteTable } from '../cables/QuoteTable';
 import clsx from 'clsx';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -82,6 +82,27 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
     const blob = new Blob([byteNumbers], { type: mimeType });
     const url = URL.createObjectURL(blob);
     return url;
+  };
+
+  const getPriceForCustomQuantity = (custom_quantity: number, quotes: Quote[]) => {
+    if (custom_quantity < 1) {
+      return null;
+    };
+    let unit_price_to_use = null;
+    for (let i = 0; i < quotes.length; i++) {
+      const quote = quotes[i];
+      if (custom_quantity < quote.quantity) {
+        if (i === 0) {
+          return null;
+        } else {
+          unit_price_to_use = quotes[i - 1].unit_price;
+        }
+      }
+    }
+    if (unit_price_to_use === null) {
+      unit_price_to_use = quotes[quotes.length - 1].unit_price;
+    }
+    return unit_price_to_use * custom_quantity;
   };
 
   const FileActions = ({ fileType, file, isModified }: { fileType: string; file: CableFileInfo; isModified: boolean }) => (
