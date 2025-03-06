@@ -34,9 +34,6 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/quote" element={<MainLayout />}>
-            <Route index element={<Quote />} />
-          </Route>
           <Route
             path="/"
             element={
@@ -47,6 +44,7 @@ function App() {
           >
             <Route index element={<Cables />} />
             <Route path="cables" element={<Cables />} />
+            <Route path="quote" element={<Quote />} />
             <Route path="orders" element={<Orders />} />
             <Route path="account/personal" element={<PersonalInfo />} />
           </Route>
