@@ -7,7 +7,7 @@ interface CartStore {
   isCartModalOpen: boolean;
   setIsCartModalOpen: (isOpen: boolean) => void;
   fetchItems: (token: string) => Promise<void>;
-  addItem: (token: string, cableId: number, selectedQuoteIndex: number) => Promise<void>;
+  addItem: (token: string, cableId: number, quantity: number, price: number) => Promise<void>;
   removeItem: (token: string, id: number) => void;
   clearCart: () => void;
 }
@@ -20,8 +20,8 @@ export const useCartStore = create<CartStore>((set) => ({
     const items = await cartApi.getCartItems(token);
     set({ items: items });
   },
-  addItem: async (token: string, cableId: number, selectedQuoteIndex: number) => { 
-    const newCartItem: CartItem  = await cartApi.addCartItem(token, cableId, selectedQuoteIndex);
+  addItem: async (token: string, cableId: number, quantity: number, price: number) => { 
+    const newCartItem: CartItem  = await cartApi.addCartItem(token, cableId, quantity, price);
     set((state) =>({
       items: [newCartItem, ...state.items]
     }))

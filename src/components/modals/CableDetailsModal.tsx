@@ -16,6 +16,7 @@ interface CableDetailsModalProps {
 
 export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: CableDetailsModalProps) => {
   const [selectedQuoteIndex, setSelectedQuoteIndex] = useState<number | null>(null);
+  const [customQuantity, setCustomQuantity] = useState<string>('');
   const [drawingBlobUrl, setDrawingBlobUrl] = useState<string | undefined>(undefined);
   const [bomBlobUrl, setBomBlobUrl] = useState<string | undefined>(undefined);
   const [fromToBlobUrl, setFromToBlobUrl] = useState<string | undefined>(undefined);
@@ -35,13 +36,28 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
   }, [cable]);
 
   const handleAddToCart = async() => {
-    if (selectedQuoteIndex === null || !cable.quote_table) return;
+    if (!cable.quote_table) return;
     
-    const token = await getAccessTokenSilently();
-    await addItem(token, cable.id, selectedQuoteIndex);
-    onClose();
-    if (onAddToCart) {
-      onAddToCart();
+    if (selectedQuoteIndex !== null) {
+      const token = await getAccessTokenSilently();
+      const quantity = cable.quote_table[selectedQuoteIndex].quantity;
+      const price = cable.quote_table[selectedQuoteIndex].extended_price;
+      await addItem(token, cable.id, quantity, price);
+      onClose();
+      if (onAddToCart) {
+        onAddToCart();
+      }
+    } else if (customQuantity) {
+      const customQuantityNum = parseInt(customQuantity, 10);
+      const price = getPriceForCustomQuantity(customQuantityNum, cable.quote_table);
+      if (price !== null) {
+        const token = await getAccessTokenSilently();
+        await addItem(token, cable.id, customQuantityNum, price);
+        onClose();
+        if (onAddToCart) {
+          onAddToCart();
+        }
+      }
     }
   };
 
@@ -105,6 +121,19 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
     return unit_price_to_use * custom_quantity;
   };
 
+  const handleQuoteSelect = (index: number | null) => {
+    setSelectedQuoteIndex(index);
+    setCustomQuantity('');
+  };
+
+  const handleCustomQuantityChange = (value: string) => {
+    // Only allow numbers
+    if (value === '' || /^\d+$/.test(value)) {
+      setCustomQuantity(value);
+      setSelectedQuoteIndex(null);
+    }
+  };
+
   const FileActions = ({ fileType, file, isModified }: { fileType: string; file: CableFileInfo; isModified: boolean }) => (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
@@ -136,6 +165,12 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
   if (!cable) {
     return null;
   }
+
+  const customPrice = customQuantity 
+    ? getPriceForCustomQuantity(parseInt(customQuantity, 10), cable.quote_table || [])
+    : null;
+  
+  const smallestQuoteQuantity = cable.quote_table?.[0]?.quantity;
   
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -271,8 +306,29 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
                   <QuoteTable
                     quotes={cable.quote_table}
                     selectedQuoteIndex={selectedQuoteIndex}
-                    onQuoteSelect={setSelectedQuoteIndex}
+                    onQuoteSelect={handleQuoteSelect}
                   />
+                </div>
+
+                {/* Custom Quantity Input */}
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Custom Quantity
+                  </label>
+                  <div className="max-w-xs">
+                    <input
+                      type="text"
+                      value={customQuantity}
+                      onChange={(e) => handleCustomQuantityChange(e.target.value)}
+                      placeholder="Enter custom quantity"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    {customQuantity && !customPrice && smallestQuoteQuantity && (
+                      <p className="mt-1 text-sm text-red-600">
+                        Custom quantity must be above the smallest quoted quantity: {smallestQuoteQuantity}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 {cable.notes && (
@@ -285,12 +341,17 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
                       Total: ${cable.quote_table[selectedQuoteIndex].extended_price.toFixed(2)}
                     </p>
                   )}
+                  {customQuantity && customPrice && (
+                    <p className="text-lg font-bold text-gray-900">
+                      Total: ${customPrice.toFixed(2)}
+                    </p>
+                  )}
                   <button
                     onClick={handleAddToCart}
-                    disabled={selectedQuoteIndex === null}
+                    disabled={selectedQuoteIndex === null && !customPrice}
                     className={clsx(
                       'px-4 py-2 rounded-lg font-medium transition-colors',
-                      selectedQuoteIndex !== null
+                      (selectedQuoteIndex !== null || customPrice !== null)
                         ? 'bg-blue-600 text-white hover:bg-blue-700'
                         : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     )}
