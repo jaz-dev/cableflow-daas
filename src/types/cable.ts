@@ -25,6 +25,7 @@ export interface Cable extends CableOverview {
   from_to_table_modified: boolean;
   quote_table?: Quote[];
   quote_expiration?: Date | string;
+  assembly_time?: number;
   notes?: string;
 }
 

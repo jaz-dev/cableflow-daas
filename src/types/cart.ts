@@ -6,4 +6,5 @@ export interface CartItem {
   quantity: number;
   cable_description: string;
   price: number;
+  assembly_time: number;
 }
