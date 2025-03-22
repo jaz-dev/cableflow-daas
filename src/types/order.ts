@@ -3,6 +3,7 @@ export interface Order {
   extended_id: string;
   created_at: string;
   total_price: number;
+  lead_time: string;
   order_items: OrderItem[];
 }
 

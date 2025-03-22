@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useCartStore } from '../../stores/cartStore';
+import { cartApi } from '../../api/cartItems';
 
 interface CartModalProps {
   isOpen: boolean;
@@ -13,16 +14,43 @@ export const CartModal = ({ isOpen, onClose }: CartModalProps) => {
   const [ subtotal, setSubtotal ] = useState(0);
   const { getAccessTokenSilently } = useAuth0();
   const { items, removeItem } = useCartStore();
+  const [allocatedHours, setAllocatedHours] = useState(0);
+  const [leadTime, setLeadTime] = useState(0);
+  const [totalAssemblyHours, setTotalAssemblyHours] = useState(0);
 
   useEffect(() => {
     const subTotal = items.reduce((sum, item) => sum + item.price, 0);
     setSubtotal(subTotal);
-  }, [items]);
+
+    const fetchAllocatedHours = async () => {
+      const token = await getAccessTokenSilently();
+      const response = await cartApi.getAllocatedHours(token);
+      const hours = response.allocated_hours;
+      setAllocatedHours(hours);
+    };
+    
+    fetchAllocatedHours();
+  }, [items, getAccessTokenSilently]);
 
   const handleRemoveItem = async (id: number) => {
     const token = await getAccessTokenSilently();
     await removeItem(token, id);
   };
+
+  useEffect(() => {
+    if (items.length === 0) {
+      setLeadTime(0);
+      setTotalAssemblyHours(0);
+      return;
+    }
+
+    const cartHours = items.reduce((sum, item) => sum + (item.assembly_time * item.quantity), 0);
+    setTotalAssemblyHours(cartHours);
+
+    const totalHours = allocatedHours + cartHours;
+    const weeks = Math.ceil(totalHours / 40);
+    setLeadTime(weeks);
+  }, [items, allocatedHours]);
 
   const handleCheckout = async () => {
     try {
@@ -36,6 +64,8 @@ export const CartModal = ({ isOpen, onClose }: CartModalProps) => {
         },
         body: JSON.stringify({
           return_url: returnUrl,
+          lead_time: leadTime,
+          total_hours: totalAssemblyHours,
         })
       });
       if (!response.ok) {
@@ -116,6 +146,10 @@ export const CartModal = ({ isOpen, onClose }: CartModalProps) => {
                 <div className="flex justify-between text-gray-600">
                   <span>Tax and Shipping</span>
                   <span className="text-sm">Calculated at Checkout</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Estimated Lead Time</span>
+                  <span className="text-sm">{leadTime} weeks</span>
                 </div>
                 <div className="pt-4 border-t">
                   <div className="flex justify-between font-medium text-gray-900">

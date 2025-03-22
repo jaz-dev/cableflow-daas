@@ -41,4 +41,13 @@ export const cartApi = {
     }
     return response.status
   },
+
+  getAllocatedHours: async (token: string) => {
+    const headers = await cartApi.getAuthHeaders(token);
+    const response = await fetch(`${BASE_URL}/allocated-hours`, { headers });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  }
 }
