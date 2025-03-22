@@ -2,7 +2,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuth0 } from '@auth0/auth0-react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { Order, OrderItem } from '../types/order';
 import { Cable } from '../types/cable';
 import { CableDetailsModal } from '../components/modals/CableDetailsModal';
@@ -107,10 +107,10 @@ export const Orders = () => {
           </div>
         ) : (
           orders.map((order) => (
-            <div key={order.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div key={order.id} className="bg-white rounded-lg shadow-sm">
               {/* Order Header */}
               <div className="bg-gray-100 px-6 py-4">
-                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-4">
                   <div>
                     <div className="text-xs font-medium uppercase text-gray-600">ORDER PLACED</div>
                     <div className="text-sm text-gray-900">
@@ -120,6 +120,19 @@ export const Orders = () => {
                         day: 'numeric'
                       })}
                     </div>
+                  </div>
+                  <div className="relative">
+                    <div className="flex items-center gap-1 text-xs font-medium uppercase text-gray-600">
+                      LEAD TIME
+                      <div className="relative inline-flex items-center group">
+                        <HelpCircle className="h-4 w-4 text-gray-400" />
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 absolute left-1/2 bottom-[calc(100%+0.5rem)] -translate-x-1/2 px-3 py-2 bg-gray-900 text-white text-xs rounded whitespace-nowrap pointer-events-none">
+                          Lead time from the order placed date
+                          <div className="absolute left-1/2 top-full -translate-x-1/2 -translate-y-[1px] border-4 border-transparent border-t-gray-900" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-900">{order.lead_time} weeks</div>
                   </div>
                   <div>
                     <div className="text-xs font-medium uppercase text-gray-600">TOTAL</div>
