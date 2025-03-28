@@ -149,6 +149,7 @@ export const Cables = () => {
           <option value="Started">Started</option>
           <option value="Quote Requested">Quote Requested</option>
           <option value="Quote Ready">Quote Ready</option>
+          <option value="Needs Review">Needs Review</option>
         </select>
 
         <div className="relative flex-1">

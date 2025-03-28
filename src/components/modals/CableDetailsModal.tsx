@@ -218,10 +218,10 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
                 <span className={clsx(
                   'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                   {
-                    'bg-yellow-100 text-yellow-800': cable.status === CableStatus.Started,
+                    'bg-yellow-100 text-yellow-800': cable.status === CableStatus.Started || cable.status === CableStatus.NeedsReview,
                     'bg-blue-100 text-blue-800': cable.status === CableStatus.QuoteRequested,
                     'bg-green-100 text-green-800': cable.status === CableStatus.QuoteReady,
-                    'bg-red-100 text-red-800': cable.status === CableStatus.NeedsReview,
+                    'bg-gray-100 text-gray-800': cable.status === CableStatus.QuoteExpired,
                   }
                 )}>
                   {cable.status}
@@ -294,7 +294,14 @@ export const CableDetailsModal = ({ isOpen, onClose, cable, onAddToCart }: Cable
             </div>
 
             {/* Quote Section */}
-            {cable.status === CableStatus.QuoteReady && cable.quote_table ? (
+            {cable.status === CableStatus.QuoteExpired ? (
+              <div className="text-center py-8">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">Quote Has Expired</h3>
+                <p className="text-gray-600">
+                  This quote is no longer valid. Please request a new quote.
+                </p>
+              </div>
+            ) : cable.status === CableStatus.QuoteReady && cable.quote_table ? (
               <div className="space-y-4">
                 {cable.quote_expiration && (
                   <p className="text-sm text-gray-600">
