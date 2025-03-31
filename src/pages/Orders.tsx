@@ -140,14 +140,6 @@ export const Orders = () => {
                   </div>
                   <div className="text-right">
                     <div className="text-sm text-gray-600">ORDER # {order.extended_id}</div>
-                    <div className="space-x-4 text-sm">
-                      <button className="text-blue-600 hover:text-blue-800 font-medium">
-                        View order details
-                      </button>
-                      <button className="text-blue-600 hover:text-blue-800 font-medium">
-                        View invoice
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
