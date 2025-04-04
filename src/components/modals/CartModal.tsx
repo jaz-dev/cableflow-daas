@@ -56,6 +56,7 @@ export const CartModal = ({ isOpen, onClose }: CartModalProps) => {
     try {
       const token = await getAccessTokenSilently();
       const returnUrl = window.location.href;
+      console.log('Return URL:', returnUrl);
       const response = await fetch(`${import.meta.env.VITE_CABLEFLOW_API_URL}/api/stripe/create-checkout-session`, {
         method: 'POST',
         headers: {
